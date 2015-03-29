@@ -1,0 +1,3757 @@
+<!-- Creator     : groff version 1.22.2 -->
+<!-- CreationDate: Fri Mar 27 11:11:48 2015 -->
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta name="generator" content="groff -Thtml, see www.gnu.org">
+<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<meta name="Content-Style" content="text/css">
+<style type="text/css">
+       p       { margin-top: 0; margin-bottom: 0; vertical-align: top }
+       pre     { margin-top: 0; margin-bottom: 0; vertical-align: top }
+       table   { margin-top: 0; margin-bottom: 0; vertical-align: top }
+       h1      { text-align: center }
+</style>
+<title>REPREPRO</title>
+
+</head>
+<body>
+
+<h1 align="center">REPREPRO</h1>
+
+<a href="#NAME">NAME</a><br>
+<a href="#SYNOPSIS">SYNOPSIS</a><br>
+<a href="#DESCRIPTION">DESCRIPTION</a><br>
+<a href="#GLOBAL OPTIONS">GLOBAL OPTIONS</a><br>
+<a href="#COMMANDS">COMMANDS</a><br>
+<a href="#CONFIG FILES">CONFIG FILES</a><br>
+<a href="#OVERRIDE FILES">OVERRIDE FILES</a><br>
+<a href="#UPLOADERS FILES">UPLOADERS FILES</a><br>
+<a href="#ERROR IGNORING">ERROR IGNORING</a><br>
+<a href="#GUESSING">GUESSING</a><br>
+<a href="#NOMENCLATURE">NOMENCLATURE</a><br>
+<a href="#Some note on updates">Some note on updates</a><br>
+<a href="#ENVIRONMENT VARIABLES">ENVIRONMENT VARIABLES</a><br>
+<a href="#BUGS">BUGS</a><br>
+<a href="#WORK-AROUNDS TO COMMON PROBLEMS">WORK-AROUNDS TO COMMON PROBLEMS</a><br>
+<a href="#INTERRUPTING">INTERRUPTING</a><br>
+<a href="#REPORTING BUGS">REPORTING BUGS</a><br>
+<a href="#COPYRIGHT">COPYRIGHT</a><br>
+
+<hr>
+
+
+<h2>NAME
+<a name="NAME"></a>
+</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">reprepro
+&minus; produce, manage and sync a local repository of
+Debian packages</p>
+
+<h2>SYNOPSIS
+<a name="SYNOPSIS"></a>
+</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>reprepro
+&minus;&minus;help</b></p>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>reprepro</b>
+[ <i>options</i> ] <i>command</i> [
+<i>per&minus;command&minus;arguments</i> ]</p>
+
+<h2>DESCRIPTION
+<a name="DESCRIPTION"></a>
+</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">reprepro is a
+tool to manage a repository of Debian packages (.deb, .udeb,
+.dsc, ...). It stores files either being injected manually
+or downloaded from some other repository (partially)
+mirrored into a pool/ hierarchy. Managed packages and
+checksums of files are stored in a Berkeley DB database
+file, so no database server is needed. Checking signatures
+of mirrored repositories and creating signatures of the
+generated Package indices is supported.</p>
+
+<p style="margin-left:11%; margin-top: 1em">Former working
+title of this program was mirrorer.</p>
+
+<h2>GLOBAL OPTIONS
+<a name="GLOBAL OPTIONS"></a>
+</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">Options can be
+specified before the command. Each affects a different
+subset of commands and is ignored by other commands. <b><br>
+&minus;h &minus;&minus;help</b></p>
+
+<p style="margin-left:22%;">Displays a short list of
+options and commands with description.</p>
+
+<p style="margin-left:11%;"><b>&minus;v, &minus;V,
+&minus;&minus;verbose</b></p>
+
+<p style="margin-left:22%;">Be more verbose. Can be applied
+multiple times. One uppercase <b>&minus;V</b> counts as five
+lowercase <b>&minus;v.</b></p>
+
+
+<p style="margin-left:11%;"><b>&minus;&minus;silent</b></p>
+
+<p style="margin-left:22%;">Be less verbose. Can be applied
+multiple times. One <b>&minus;v</b> and one <b>&minus;s</b>
+cancel each other out.</p>
+
+<p style="margin-left:11%;"><b>&minus;f,
+&minus;&minus;force</b></p>
+
+<p style="margin-left:22%;">This option is ignored, as it
+no longer exists.</p>
+
+<p style="margin-left:11%;"><b>&minus;b,
+&minus;&minus;basedir</b> <i>basedir</i></p>
+
+<p style="margin-left:22%;">Sets the base&minus;dir all
+other default directories are relative to. If none is
+supplied and the <b>REPREPRO_BASE_DIR</b> environment
+variable is not set either, the current directory will be
+used.</p>
+
+<p style="margin-left:11%;"><b>&minus;&minus;outdir</b>
+<i>outdir</i></p>
+
+<p style="margin-left:22%;">Sets the base&minus;dir of the
+repository to manage, i.e. where the <b>pool/</b>
+subdirectory resides. And in which the <b>dists/</b>
+directory is placed by default. If this starts with
+&rsquo;<b>+b/</b>&rsquo;, it is relative to basedir.</p>
+
+<p style="margin-left:22%; margin-top: 1em">The default for
+this is <i>basedir</i>.</p>
+
+<p style="margin-left:11%;"><b>&minus;&minus;confdir</b>
+<i>confdir</i></p>
+
+<p style="margin-left:22%;">Sets the directory where the
+configuration is searched in.</p>
+
+<p style="margin-left:22%; margin-top: 1em">If this starts
+with &rsquo;<b>+b/</b>&rsquo;, it is relative to
+basedir.</p>
+
+<p style="margin-left:22%; margin-top: 1em">If none is
+given, <b>+b/conf</b> (i.e. <i>basedir</i><b>/conf</b>) will
+be used.</p>
+
+<p style="margin-left:11%;"><b>&minus;&minus;distdir</b>
+<i>distdir</i></p>
+
+<p style="margin-left:22%;">Sets the directory to generate
+index files relatively to. (i.e. things like Packages.gz,
+Sources.gz and Release.gpg)</p>
+
+<p style="margin-left:22%; margin-top: 1em">If this starts
+with &rsquo;<b>+b/</b>&rsquo;, it is relative to basedir, if
+starting with &rsquo;<b>+o/</b>&rsquo; relative to
+outdir.</p>
+
+<p style="margin-left:22%; margin-top: 1em">If none is
+given, <b>+o/dists</b> (i.e. <i>outdir</i><b>/dists</b>) is
+used.</p>
+
+<p style="margin-left:22%; margin-top: 1em"><b>Note:</b>
+apt has <b>dists</b> hard-coded in it, so this is mostly
+only useful for testing or when your webserver pretends
+another directory structure than your physical layout.</p>
+
+
+<p style="margin-left:22%; margin-top: 1em"><b>Warning:</b>
+Beware when changing this forth and back between two values
+not ending in the same directory. Reprepro only looks if
+files it wants are there. If nothing of the content changed
+and there is a file it will not touch it, assuming it is the
+one it wrote last time, assuming any different
+<b>&minus;&minus;distdir</b> ended in the same directory. So
+either clean a directory before setting
+<b>&minus;&minus;distdir</b> to it or do an <b>export</b>
+with the new one first to have a consistent state.</p>
+
+<p style="margin-left:11%;"><b>&minus;&minus;logdir</b>
+<i>logdir</i></p>
+
+<p style="margin-left:22%;">The directory where files
+generated by the <b>Log:</b> directive are stored if they
+have no absolute path.</p>
+
+<p style="margin-left:22%; margin-top: 1em">If this starts
+with &rsquo;<b>+b/</b>&rsquo;, it is relative to basedir, if
+starting with &rsquo;<b>+o/</b>&rsquo; relative to outdir,
+with &rsquo;<b>+c/</b>&rsquo; relative to confdir.</p>
+
+<p style="margin-left:22%; margin-top: 1em">If none is
+given, <b>+b/logs</b> (i.e. <i>basedir</i><b>/logs</b>) is
+used.</p>
+
+<p style="margin-left:11%;"><b>&minus;&minus;dbdir</b>
+<i>dbdir</i></p>
+
+<p style="margin-left:22%;">Sets the directory where
+reprepro keeps its databases.</p>
+
+<p style="margin-left:22%; margin-top: 1em">If this starts
+with &rsquo;<b>+b/</b>&rsquo;, it is relative to basedir, if
+starting with &rsquo;<b>+o/</b>&rsquo; relative to outdir,
+with &rsquo;<b>+c/</b>&rsquo; relative to confdir.</p>
+
+<p style="margin-left:22%; margin-top: 1em">If none is
+given, <b>+b/db</b> (i.e. <i>basedir</i><b>/db</b>) is
+used.</p>
+
+<p style="margin-left:22%; margin-top: 1em"><b>Note:</b>
+This is permanent data, no cache. One has almost to
+regenerate the whole repository when this is lost.</p>
+
+<p style="margin-left:11%;"><b>&minus;&minus;listdir</b>
+<i>listdir</i></p>
+
+<p style="margin-left:22%;">Sets the directory where
+downloads it downloads indices to when importing from other
+repositories. This is temporary data and can be safely
+deleted when not in an update run.</p>
+
+<p style="margin-left:22%; margin-top: 1em">If this starts
+with &rsquo;<b>+b/</b>&rsquo;, it is relative to basedir, if
+starting with &rsquo;<b>+o/</b>&rsquo; relative to outdir,
+with &rsquo;<b>+c/</b>&rsquo; relative to confdir.</p>
+
+<p style="margin-left:22%; margin-top: 1em">If none is
+given, <b>+b/lists</b> (i.e. <i>basedir</i><b>/lists</b>) is
+used.</p>
+
+<p style="margin-left:11%;"><b>&minus;&minus;morguedir</b>
+<i>morguedir</i></p>
+
+<p style="margin-left:22%;">Files deleted from the pool are
+stored into <i>morguedir</i>.</p>
+
+<p style="margin-left:22%; margin-top: 1em">If this starts
+with &rsquo;<b>+b/</b>&rsquo;, it is relative to basedir, if
+starting with &rsquo;<b>+o/</b>&rsquo; relative to outdir,
+with &rsquo;<b>+c/</b>&rsquo; relative to confdir.</p>
+
+<p style="margin-left:22%; margin-top: 1em">If none is
+given, deleted files are just deleted.</p>
+
+<p style="margin-left:11%;"><b>&minus;&minus;methoddir</b>
+<i>methoddir</i></p>
+
+<p style="margin-left:22%;">Look in <i>methoddir</i>
+instead of <b>/usr/lib/apt/methods</b> for methods to call
+when importing from other repositories.</p>
+
+<p style="margin-left:11%;"><b>&minus;C,
+&minus;&minus;component</b> <i>components</i></p>
+
+<p style="margin-left:22%;">Limit the specified command to
+this components only. This will force added packages to this
+components, limit removing packages from this components,
+only list packages in this components, and/or otherwise only
+look at packages in this components, depending on the
+command in question.</p>
+
+<p style="margin-left:22%; margin-top: 1em">Multiple
+components are specified by separating them with <b>|</b>,
+as in <b>&minus;C &rsquo;main|contrib&rsquo;</b>.</p>
+
+<p style="margin-left:11%;"><b>&minus;A,
+&minus;&minus;architecture</b> <i>architectures</i></p>
+
+<p style="margin-left:22%;">Limit the specified command to
+this architectures only. (i.e. only list such packages, only
+remove packages from the specified architectures, or
+otherwise only look at/act on this architectures depending
+on the specific command).</p>
+
+<p style="margin-left:22%; margin-top: 1em">Multiple
+architectures are specified by separating them with
+<b>|</b>, as in <b>&minus;A
+&rsquo;sparc|i386&rsquo;</b>.</p>
+
+<p style="margin-left:22%; margin-top: 1em">Note that
+architecture <b>all</b> packages can be included to each
+architecture but are then handled separately. Thus by using
+<b>&minus;A</b> in a specific way one can have different
+versions of an architecture <b>all</b> package in different
+architectures of the same distribution.</p>
+
+<p style="margin-left:11%;"><b>&minus;T,
+&minus;&minus;type</b> dsc|deb|udeb</p>
+
+<p style="margin-left:22%;">Limit the specified command to
+this packagetypes only. (i.e. only list such packages, only
+remove such packages, only include such packages, ...)</p>
+
+<p style="margin-left:11%;"><b>&minus;S,
+&minus;&minus;section</b> <i>section</i></p>
+
+<p style="margin-left:22%;">Overrides the section of
+inclusions. (Also override possible override files)</p>
+
+<p style="margin-left:11%;"><b>&minus;P,
+&minus;&minus;priority</b> <i>priority</i></p>
+
+<p style="margin-left:22%;">Overrides the priority of
+inclusions. (Also override possible override files)</p>
+
+
+<p style="margin-left:11%;"><b>&minus;&minus;export=</b>(<b>never</b>|<b>changed</b>|<b>lookedat</b>|<b>force</b>)</p>
+
+<p style="margin-left:22%;">This option specify whether and
+how the high level actions (e.g. install, update, pull,
+delete) should export the index files of the distributions
+they work with.</p>
+
+
+<p style="margin-left:11%;"><b>&minus;&minus;export=lookedat</b></p>
+
+<p style="margin-left:22%;">In this mode every distribution
+the action handled will be exported, unless there was an
+error possibly corrupting it. <i><br>
+Note</i> that only missing files and files whose intended
+content changed between before and after the action will be
+written. To get a guaranteed current export, use the
+<b>export</b> action. <br>
+For backwards compatibility, <b>lookedat</b> is also
+available under the old name <b>normal</b>. The name
+<b>normal</b> is deprecated and will be removed in future
+versions.</p>
+
+
+<p style="margin-left:11%;"><b>&minus;&minus;export=changed</b></p>
+
+<p style="margin-left:22%;">In this mode every distribution
+actually changed will be exported, unless there was an error
+possibly corrupting it. (i.e. if nothing changed, not even
+missing files will be created.) <i><br>
+Note</i> that only missing files and files whose intended
+content changed between before and after the action will be
+written. To get a guaranteed current export, use the
+<b>export</b> action.</p>
+
+
+<p style="margin-left:11%;"><b>&minus;&minus;export=force</b></p>
+
+<p style="margin-left:22%;">Always export all distributions
+looked at, even if there was some error possibly bringing it
+into a inconsistent state.</p>
+
+
+<p style="margin-left:11%;"><b>&minus;&minus;export=never</b></p>
+
+<p style="margin-left:22%;">No index files are exported.
+You will have to call <b>export</b> later. <i><br>
+Note</i> that you most likely additionally need the
+<b>&minus;&minus;keepunreferencedfiles</b> option, if you do
+not want some of the files pointed to by the untouched index
+files to vanish.</p>
+
+
+<p style="margin-left:11%;"><b>&minus;&minus;ignore=</b><i>what</i></p>
+
+<p style="margin-left:22%;">Ignore errors of type
+<i>what</i>. See the section <b>ERROR IGNORING</b> for
+possible values.</p>
+
+
+<p style="margin-left:11%;"><b>&minus;&minus;nolistsdownload</b></p>
+
+<p style="margin-left:22%;">When running <b>update</b>,
+<b>checkupdate</b> or <b>predelete</b> do not download any
+Release or index files. This is hardly useful except when
+you just run one of those command for the same
+distributions. And even then reprepro is usually good in not
+downloading except <b>Release</b> and <b>Release.gpg</b>
+files again.</p>
+
+
+<p style="margin-left:11%;"><b>&minus;&minus;nothingiserror</b></p>
+
+<p style="margin-left:22%;">If nothing was done, return
+with exitcode 1 instead of the usual 0.</p>
+
+<p style="margin-left:22%; margin-top: 1em">Note that
+&quot;nothing was done&quot; means the primary purpose of
+the action in question. Auxillary actions (opening and
+closeing the database, exporting missing files with
+&minus;&minus;export=lookedat, ...) usually do not count.
+Also note that this is not very well tested. If you find an
+action that claims to have done something in some cases
+where you think it should not, please let me know.</p>
+
+
+<p style="margin-left:11%;"><b>&minus;&minus;keeptemporaries</b></p>
+
+<p style="margin-left:22%;">Do not delete temporary
+<b>.new</b> files when exporting a distribution fails.
+(reprepro first create <b>.new</b> files in the <b>dists</b>
+directory and only if everything is generated, all files are
+put into their final place at once. If this option is not
+specified and something fails, all are deleted to keep
+<b>dists</b> clean).</p>
+
+
+<p style="margin-left:11%;"><b>&minus;&minus;keepunreferencedfiles</b></p>
+
+<p style="margin-left:22%;">Do not delete files that are no
+longer used because the package they are from is
+deleted/replaced with a newer version from the last
+distribution it was in.</p>
+
+
+<p style="margin-left:11%;"><b>&minus;&minus;keepunusednewfiles</b></p>
+
+<p style="margin-left:22%;">The include, includedsc,
+includedeb and processincoming by default delete any file
+they added to the pool that is not marked used at the end of
+the operation. While this keeps the pool clean and allows
+changing before trying to add again, this needs copying and
+checksum calculation every time one tries to add a file.</p>
+
+
+<p style="margin-left:11%;"><b>&minus;&minus;keepdirectories</b></p>
+
+<p style="margin-left:22%;">Do not try to rmdir parent
+directories after files or directories have been removed
+from them. (Do this if your directories have special
+permissions you want keep, do not want to be pestered with
+warnings about errors to remove them, or have a buggy rmdir
+call deleting non-empty directories.)</p>
+
+
+<p style="margin-left:11%;"><b>&minus;&minus;keeptemporaries</b></p>
+
+<p style="margin-left:22%;">If an export of an distribution
+fails, this option causes reprepro to not delete the
+temporary <b>.new</b> files in the <b>dists/</b> directory,
+so one can look at the partial result.</p>
+
+
+<p style="margin-left:11%;"><b>&minus;&minus;ask&minus;passphrase</b></p>
+
+<p style="margin-left:22%;">Ask for passphrases when
+signing things and one is needed. This is a quick and dirty
+implementation using the obsolete <b>getpass(3)</b> function
+with the description gpgme is supplying. So the prompt will
+look quite funny and support for passphrases with more than
+8 characters depend on your libc. I suggest using
+gpg&minus;agent or something like that instead.</p>
+
+
+<p style="margin-left:11%;"><b>&minus;&minus;noskipold</b></p>
+
+<p style="margin-left:22%;">When updating do not skip
+targets where no new index files and no files marked as
+already processed are available.</p>
+
+<p style="margin-left:22%; margin-top: 1em">If you changed
+a script to preprocess downloaded index files or changed a
+Listfilter, you most likely want to call reprepro with
+&minus;&minus;noskipold.</p>
+
+
+<p style="margin-left:11%;"><b>&minus;&minus;waitforlock</b>
+<i>count</i></p>
+
+<p style="margin-left:22%;">If there is a lockfile
+indicating another instance of reprepro is currently using
+the database, retry <i>count</i> times after waiting for 10
+seconds each time. The default is 0 and means to error out
+instantly.</p>
+
+<p style="margin-left:11%;"><b>&minus;&minus;spacecheck
+full</b>|<b>none</b></p>
+
+<p style="margin-left:22%;">The default is <b>full</b>:
+<br>
+In the update commands, check for every to be downloaded
+file which filesystem it is on and how much space is left.
+<br>
+To disable this behaviour, use <b>none</b>.</p>
+
+
+<p style="margin-left:11%;"><b>&minus;&minus;dbsafetymargin</b>
+<i>bytes-count</i></p>
+
+<p style="margin-left:22%;">If checking for free space,
+reserve <i>byte-count</i> bytes on the filesystem containing
+the <b>db/</b> directory. The default is 104857600 (i.e.
+100MB), which is quite large. But as there is no way to know
+in advance how large the databases will grow and libdb is
+extremely touchy in that regard, lower only when you know
+what you do.</p>
+
+
+<p style="margin-left:11%;"><b>&minus;&minus;safetymargin</b>
+<i>bytes-count</i></p>
+
+<p style="margin-left:22%;">If checking for free space,
+reserve <i>byte-count</i> bytes on filesystems not
+containing the <b>db/</b> directory. The default is 1048576
+(i.e. 1MB).</p>
+
+
+<p style="margin-left:11%;"><b>&minus;&minus;noguessgpgtty</b></p>
+
+<p style="margin-left:22%;">Don&rsquo;t set the environment
+variable <b>GPG_TTY</b>, even when it is not set, stdin is
+terminal and <b>/proc/self/fd/0</b> is a readable symbolic
+link.</p>
+
+
+<p style="margin-left:11%;"><b>&minus;&minus;gnupghome</b></p>
+
+<p style="margin-left:22%;">Set the <b>GNUPGHOME</b>
+evnironment variable to the given directory as argument to
+this option. And your gpg will most likely use the content
+of this variable instead of &quot;~/.gnupg&quot;. Take a
+look at <b>gpg</b>(1) to be sure. This option in the command
+line is usually not very useful, as it is possible to set
+the environment variable directly. Its main reason for
+existance is that it can be used in
+<i>conf</i><b>/options</b>.</p>
+
+<p style="margin-left:11%;"><b>&minus;&minus;gunzip</b>
+<i>gz-uncompressor</i></p>
+
+<p style="margin-left:22%;">While reprepro links against
+<b>libz</b>, it will look for the program given with this
+option (or <b>gunzip</b> if not given) and use that when
+uncompressing index files while downloading from remote
+repositories. (So that downloading and uncompression can
+happen at the same time). If the program is not found or is
+<b>NONE</b> (all-uppercase) then uncompressing will always
+be done using the built in uncompression method. The program
+has to accept the compressed file as stdin and write the
+uncompressed file into stdout.</p>
+
+<p style="margin-left:11%;"><b>&minus;&minus;bunzip2</b>
+<i>bz2-uncompressor</i></p>
+
+<p style="margin-left:22%;">When uncompressing downloaded
+index files or when not linked against <b>libbz2</b>
+reprepro will use this program to uncompress <b>.bz2</b>
+files. The default value is <b>bunzip2</b>. If the program
+is not found or is <b>NONE</b> (all-uppercase) then
+uncompressing will always be done using the built in
+uncompression method or not be possible when not linked
+against <b>libbz2</b>. The program has to accept the
+compressed file as stdin and write the uncompressed file
+into stdout.</p>
+
+<p style="margin-left:11%;"><b>&minus;&minus;unlzma</b>
+<i>lzma-uncompressor</i></p>
+
+<p style="margin-left:22%;">When trying to uncompress or
+read lzma compressed files, this program will be used. The
+default value is <b>unlzma</b>. If the program is not found
+or is <b>NONE</b> (all-uppercase) then uncompressing lzma
+files will not be possible. The program has to accept the
+compressed file as stdin and write the uncompressed file
+into stdout.</p>
+
+<p style="margin-left:11%;"><b>&minus;&minus;unxz</b>
+<i>xz-uncompressor</i></p>
+
+<p style="margin-left:22%;">When trying to uncompress or
+read xz compressed files, this program will be used. The
+default value is <b>unxz</b>. If the program is not found or
+is <b>NONE</b> (all-uppercase) then uncompressing xz files
+will not be possible. The program has to accept the
+compressed file as stdin and write the uncompressed file
+into stdout.</p>
+
+<p style="margin-left:11%;"><b>&minus;&minus;lunzip</b>
+<i>lzip-uncompressor</i></p>
+
+<p style="margin-left:22%;">When trying to uncompress or
+read lzip compressed files, this program will be used. The
+default value is <b>lunzip</b>. If the program is not found
+or is <b>NONE</b> (all-uppercase) then uncompressing lz
+files will not be possible. The program has to accept the
+compressed file as stdin and write the uncompressed file
+into stdout.</p>
+
+
+<p style="margin-left:11%;"><b>&minus;&minus;list&minus;max</b>
+<i>count</i></p>
+
+<p style="margin-left:22%;">Limits the output of
+<b>list</b>, <b>listmatched</b> and <b>listfilter</b> to the
+first <i>count</i> results. The default is 0, which means
+unlimited.</p>
+
+
+<p style="margin-left:11%;"><b>&minus;&minus;list&minus;skip</b>
+<i>count</i></p>
+
+<p style="margin-left:22%;">Omitts the first <i>count</i>
+results from the output of <b>list</b>, <b>listmatched</b>
+and <b>listfilter</b>.</p>
+
+
+<p style="margin-left:11%;"><b>&minus;&minus;list&minus;format</b>
+<i>format</i></p>
+
+<p style="margin-left:22%;">Set the output format of
+<b>list</b>, <b>listmatched</b> and <b>listfilter</b>
+commands. The format is similar to dpkg&minus;query&rsquo;s
+<b>&minus;&minus;showformat</b>: fields are specified as
+<b>${</b><i>fieldname</i><b>}</b> or
+<b>${</b><i>fieldname</i><b>;</b><i>length</i><b>}</b>. Zero
+length or no length means unlimited. Positive numbers mean
+fill with spaces right, negative fill with spaces left.</p>
+
+<p style="margin-left:22%; margin-top: 1em"><b>\n</b>,
+<b>\r</b>, <b>\t</b>, <b>\0</b> are new-line,
+carriage-return, tabulator and zero-byte. Backslash
+(<b>\</b>) can be used to escape every
+non-letter-or-digit.</p>
+
+<p style="margin-left:22%; margin-top: 1em">The special
+field names <b>$identifier</b>, <b>$architecture</b>,
+<b>$component</b>, <b>$type</b>, <b>$codename</b> denote
+where the package was found.</p>
+
+<p style="margin-left:22%; margin-top: 1em">The special
+field names <b>$source</b> and <b>$sourceversion</b> denote
+the source and source version a package belongs to. (i.e.
+<b>${$source}</b> will either be the same as
+<b>${source}</b> (without a possible version in parentheses
+at the end) or the same as <b>${package}</b>.</p>
+
+<p style="margin-left:22%; margin-top: 1em">The special
+field names <b>$basename</b>, <b>$filekey</b> and
+<b>$fullfilename</b> denote the first package file part of
+this entry (i.e. usually the .deb, .udeb or .dsc file) as
+basename, as filekey (filename relative to the outdir) and
+the full filename with outdir prepended (i.e. as relative or
+absolute as your outdir (or basedir if you did not set
+outdir) is).</p>
+
+<p style="margin-left:22%; margin-top: 1em">When
+<b>&minus;&minus;list&minus;format</b> is not given or
+<b>NONE</b>, then the default is equivalent to <b><br>
+${$identifier} ${package} ${version}\n</b>.</p>
+
+<p style="margin-left:22%; margin-top: 1em">Escaping digits
+or letters not in above list, using dollars not escaped
+outside specified constructs, or any field names not listed
+as special and not consisting entirely out of letters,
+digits and minus signs have undefined behaviour and might
+change meaning without any further notice.</p>
+
+<p style="margin-left:22%; margin-top: 1em">If you give
+this option on the command line, don&rsquo;t forget that $
+is also interpreted by your shell. So you have to properly
+escape it. For example by putting the whole argument to
+&minus;&minus;list&minus;format in single quotes.</p>
+
+
+<p style="margin-left:11%;"><b>&minus;&minus;show&minus;percent</b></p>
+
+<p style="margin-left:22%;">When downloading packages, show
+each completed percent of completed package downloads
+together with the size of completely downloaded packages.
+(Repeating this option increases the frequency of this
+output).</p>
+
+
+<p style="margin-left:11%;"><b>&minus;&minus;onlysmalldeletes</b></p>
+
+<p style="margin-left:22%;">The pull and update commands
+will skip every distribution in which one target loses more
+than 20% of its packages (and at least 10).</p>
+
+<p style="margin-left:22%; margin-top: 1em">Using this
+option (or putting it in the options config file) can avoid
+removing large quantities of data but means you might often
+give <b>&minus;&minus;noonlysmalldeletes</b> to override
+it.</p>
+
+<p style="margin-left:11%;"><b>&minus;&minus;restrict</b>
+<i>src</i>[<b>=</b><i>version</i>|<b>:</b><i>type</i>]</p>
+
+<p style="margin-left:22%;">Restrict a <b>pull</b> or
+<b>update</b> to only act on packages belonging to
+source-package <i>src</i>. Any other package will not be
+updated (unless it matches a
+<b>&minus;&minus;restrict&minus;bin</b>). Only packages that
+would otherwise be updated or are at least marked with
+<b>hold</b> in a <b>FilterList</b> or <b>FilerSrcList</b>
+will be updated.</p>
+
+<p style="margin-left:22%; margin-top: 1em">The action can
+be restricted to a source version using a equal sign or
+changed to another type (see FilterList) using a colon.</p>
+
+<p style="margin-left:22%; margin-top: 1em">This option can
+be given multiple times to list multiple packages, but each
+package may only be named once (even when there are
+different versions or types).</p>
+
+
+<p style="margin-left:11%;"><b>&minus;&minus;restrict&minus;binary</b>
+<i>name</i>[<b>=</b><i>version</i>|<b>:</b><i>type</i>]</p>
+
+<p style="margin-left:22%;">Like
+<b>&minus;&minus;restrict</b> but restrict to binary
+packages (<b>.deb</b> and <b>.udeb</b>). Source packages are
+not upgraded unless they appear in a
+<b>&minus;&minus;restrict</b>.</p>
+
+
+<p style="margin-left:11%;"><b>&minus;&minus;restrict&minus;file</b>
+<i>filename</i></p>
+
+<p style="margin-left:22%;">Like
+<b>&minus;&minus;restrict</b> but read a whole file in the
+<b>FilterSrcList</b> format.</p>
+
+
+<p style="margin-left:11%;"><b>&minus;&minus;restrict&minus;file&minus;bin</b>
+<i>filename</i></p>
+
+<p style="margin-left:22%;">Like
+<b>&minus;&minus;restrict&minus;bin</b> but read a whole
+file in the <b>FilterList</b> format.</p>
+
+<p style="margin-left:11%;"><b>&minus;&minus;endhook</b>
+<i>hookscript</i></p>
+
+<p style="margin-left:22%; margin-top: 1em">Run the
+specified <i>hookscript</i> once reprepro exits. It will get
+the usual <b>REPREPRO_</b>* environment variables set (or
+unset) and additionally a variable <b>REPREPRO_EXIT_CODE</b>
+that is the exit code with which reprepro would have exited
+(the hook is always called once the initial parsing of
+global options and the command name is done, no matter if
+reprepro did anything or not). Reprepro will return to the
+calling process with the exitcode of this script. Reprepro
+has closed all its databases and removed all its locks, so
+you can run reprepro again in this script (unless someone
+else did so in the same repository before, of course).</p>
+
+<p style="margin-left:22%; margin-top: 1em">The only
+advantage over running that command always directly after
+reprepro is that you can some environment variables set and
+cannot so easily forget it if this option is in
+conf/options.</p>
+
+<p style="margin-left:22%; margin-top: 1em">The script is
+supposed to be located relative to <i>confdir</i>, unless
+its name starts with <b>/</b>, <b>./</b>, <b>+b/</b>,
+<b>+o/</b>, or <b>+c/</b> and the name may not start (except
+in the cases given before) with a <b>+</b>.</p>
+
+<p style="margin-left:22%; margin-top: 1em">An example
+script looks like: <b><br>
+#!/bin/sh</b></p>
+
+<p style="margin-left:22%; margin-top: 1em"><b>if [
+&quot;$REPREPRO_EXIT_CODE&quot; &minus;ne 0 ] ; then</b></p>
+
+<table width="100%" border="0" rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="8%"></td>
+<td width="7%"></td>
+<td width="85%">
+
+
+<p><b>exit &quot;$REPREPRO_EXIT_CODE&quot;</b></p></td></tr>
+</table>
+
+<p style="margin-left:22%;"><b>fi</b></p>
+
+<p style="margin-left:22%; margin-top: 1em"><b>echo
+&quot;congratulations, reprepro with arguments: $*&quot;
+<br>
+echo &quot;seems to have run successfully. REPREPRO_ part of
+the environment is:&quot; <br>
+set | grep ^REPREPRO_</b></p>
+
+<p style="margin-left:22%; margin-top: 1em"><b>exit
+0</b></p>
+
+<p style="margin-left:11%;"><b>&minus;&minus;outhook</b>
+<i>hookscript</i></p>
+
+<p style="margin-left:22%;"><i>hookscript</i> is called
+with a <b>.outlog</b> file as argument (located in
+<i>logdir</i>) containing a description of all changes made
+to <i>outdir</i>.</p>
+
+<p style="margin-left:22%; margin-top: 1em">The script is
+supposed to be located relative to <i>confdir</i>, unless
+its name starts with <b>/</b>, <b>./</b>, <b>+b/</b>,
+<b>+o/</b>, or <b>+c/</b> and the name may not start (except
+in the cases given before) with a <b>+</b>.</p>
+
+<p style="margin-left:22%; margin-top: 1em">For a format of
+the <b>.outlog</b> files generated for this script see the
+<b>manual.html</b> shiped with reprepro.</p>
+
+<h2>COMMANDS
+<a name="COMMANDS"></a>
+</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>export</b> [
+<i>codenames</i> ]</p>
+
+<p style="margin-left:22%;">Generate all index files for
+the specified distributions.</p>
+
+<p style="margin-left:22%; margin-top: 1em">This
+regenerates all files unconditionally. It is only useful if
+you want to be sure <b>dists</b> is up to date, you called
+some other actions with <b>&minus;&minus;export=never</b>
+before or you want to create an initial empty but fully
+equipped <b>dists/</b><i>codename</i> directory.</p>
+
+<p style="margin-left:11%;">[ <b>&minus;&minus;delete</b> ]
+<b>createsymlinks</b> [ <i>codenames</i> ]</p>
+
+<p style="margin-left:22%;">Creates <i>suite</i> symbolic
+links in the <b>dists/</b>-directory pointing to the
+corresponding <i>codename</i>.</p>
+
+<p style="margin-left:22%; margin-top: 1em">It will not
+create links, when multiple of the given codenames would be
+linked from the same suite name, or if the link already
+exists (though when <b>&minus;&minus;delete</b> is given it
+will delete already existing symlinks)</p>
+
+<p style="margin-left:11%;"><b>list</b> <i>codename</i> [
+<i>packagename</i> ]</p>
+
+<p style="margin-left:22%;">List all packages (source and
+binary, except when <b>&minus;T</b> or <b>&minus;A</b> is
+given) with the given name in all components (except when
+<b>&minus;C</b> is given) and architectures (except when
+<b>&minus;A</b> is given) of the specified distribution. If
+no package name is given, list everything. The format of the
+output can be changed with
+<b>&minus;&minus;list&minus;format</b>. To only get parts of
+the result, use <b>&minus;&minus;list&minus;max</b> and
+<b>&minus;&minus;list&minus;skip</b>.</p>
+
+<p style="margin-left:11%;"><b>listmatched</b> <i>codename
+glob</i></p>
+
+<p style="margin-left:22%;">as list, but does not list a
+single package, but all packages matching the given
+shell-like <i>glob</i>. (i.e. <b>*</b>, <b>?</b> and
+<b>[</b><i>chars</i><b>]</b> are allowed).</p>
+
+<p style="margin-left:22%; margin-top: 1em">Examples:</p>
+
+<p style="margin-left:22%; margin-top: 1em"><b>reprepro
+&minus;b . listmatched test2 &rsquo;linux&minus;*&rsquo;</b>
+lists all packages starting with <b>linux&minus;</b>.</p>
+
+<p style="margin-left:11%;"><b>listfilter</b> <i>codename
+condition</i></p>
+
+<p style="margin-left:22%;">as list, but does not list a
+single package, but all packages matching the given
+condition.</p>
+
+<p style="margin-left:22%; margin-top: 1em">The format of
+the formulas is those of the dependency lines in Debian
+packages&rsquo; control files with some extras. That means a
+formula consists of names of fields with a possible
+condition for its content in parentheses. These atoms can be
+combined with an exclamation mark &rsquo;!&rsquo; (meaning
+not), a pipe symbol &rsquo;|&rsquo; (meaning or) and a comma
+&rsquo;,&rsquo; (meaning and). Additionally parentheses can
+be used to change binding (otherwise &rsquo;!&rsquo; binds
+more than &rsquo;|&rsquo; than &rsquo;,&rsquo;).</p>
+
+<p style="margin-left:22%; margin-top: 1em">The values
+given in the search expression are directly alphabetically
+compared to the headers in the respective index file. That
+means that each part <i>Fieldname</i> <b>(</b><i>cmp
+value</i><b>)</b> of the formula will be true for exactly
+those package that have in the <b>Package</b> or
+<b>Sources</b> file a line starting with <i>fieldname</i>
+and a value is alphabetically <i>cmp</i> to
+<i>value</i>.</p>
+
+<p style="margin-left:22%; margin-top: 1em">Additionally
+since reprepro 3.11.0, &rsquo;<b>%</b>&rsquo; can be used as
+comparison operator, denoting matching a name with shell
+like wildcard (with &rsquo;<b>*</b>&rsquo;,
+&rsquo;<b>?</b>&rsquo; and
+&rsquo;<b>[</b>..<b>]</b>&rsquo;).</p>
+
+<p style="margin-left:22%; margin-top: 1em">The special
+field names starting with &rsquo;<b>$</b>&rsquo; have
+special meaning (available since 3.11.1):</p>
+
+
+<p style="margin-left:22%; margin-top: 1em"><b>$Version</b></p>
+
+<p style="margin-left:22%; margin-top: 1em">The version of
+the package, comparison is not alphabetically, but as Debian
+version strings.</p>
+
+
+<p style="margin-left:22%; margin-top: 1em"><b>$Source</b></p>
+
+<p style="margin-left:22%; margin-top: 1em">The source name
+of the package.</p>
+
+
+<p style="margin-left:22%; margin-top: 1em"><b>$SourceVersion</b></p>
+
+<p style="margin-left:22%; margin-top: 1em">The source
+version of the package.</p>
+
+
+<p style="margin-left:22%; margin-top: 1em"><b>$Architecture</b></p>
+
+<p style="margin-left:22%; margin-top: 1em">The
+architecture the package is in (listfilter) or to be put
+into.</p>
+
+
+<p style="margin-left:22%; margin-top: 1em"><b>$Component</b></p>
+
+<p style="margin-left:22%; margin-top: 1em">The component
+the package is in (listfilter) or to be put into.</p>
+
+
+<p style="margin-left:22%; margin-top: 1em"><b>$Packagetype</b></p>
+
+<p style="margin-left:22%; margin-top: 1em">The packagetype
+of the package.</p>
+
+<p style="margin-left:22%; margin-top: 1em">Examples:</p>
+
+<p style="margin-left:22%; margin-top: 1em"><b>reprepro
+&minus;b . listfilter test2 &rsquo;Section (==
+admin)&rsquo;</b> will list all packages in distribution
+test2 with a Section field and the value of that field being
+<b>admin</b>.</p>
+
+<p style="margin-left:22%; margin-top: 1em"><b>reprepro
+&minus;b . &minus;T deb listfilter test2 &rsquo;Source
+(==</b> <i>blub</i><b>) | ( !Source , Package (==</b>
+<i>blub</i><b>) )&rsquo;</b> will find all .deb Packages
+with either a Source field blub or no Source field and a
+Package field blub. (That means all package generated by a
+source package <i>blub</i>, except those also specifying a
+version number with its Source).</p>
+
+<p style="margin-left:22%; margin-top: 1em"><b>reprepro
+&minus;b . &minus;T deb listfilter test2 &rsquo;$Source
+(==</b><i>blub</i><b>)</b> is the better way to do this (but
+only available since 3.11.1).</p>
+
+<p style="margin-left:22%; margin-top: 1em"><b>reprepro
+&minus;b . listfilter test2 &rsquo;$PackageType (==deb),
+$Source (==</b><i>blub</i><b>)</b> is another (less
+efficient) way.</p>
+
+<p style="margin-left:22%; margin-top: 1em"><b>reprepro
+&minus;b . listfilter test2 &rsquo;Package (%
+linux&minus;*&minus;2.6*)&rsquo;</b> lists all packages with
+names starting with <b>linux&minus;</b> and later having an
+<b>&minus;2.6</b>.</p>
+
+<p style="margin-left:11%;"><b>ls</b>
+<i>package-name</i></p>
+
+<p style="margin-left:22%;">List the versions of the the
+specified package in all distributions.</p>
+
+<p style="margin-left:11%;"><b>lsbycomponent</b>
+<i>package-name</i></p>
+
+<p style="margin-left:22%;">Like ls, but group by component
+(and print component names).</p>
+
+<p style="margin-left:11%;"><b>remove</b> <i>codename
+package-names</i></p>
+
+<p style="margin-left:22%;">Delete all packages in the
+specified distribution, that have package name listed as
+argument. (i.e. remove all packages <b>list</b> with the
+same arguments and options would list, except that an empty
+package list is not allowed.)</p>
+
+<p style="margin-left:22%; margin-top: 1em">Note that like
+any other operation removing or replacing a package, the old
+package&rsquo;s files are unreferenced and thus may be
+automatically deleted if this was their last reference and
+no <b>&minus;&minus;keepunreferencedfiles</b> specified.</p>
+
+<p style="margin-left:11%;"><b>removematched</b>
+<i>codename glob</i></p>
+
+<p style="margin-left:22%;">Delete all packages
+<b>listmatched</b> with the same arguments would list.</p>
+
+<p style="margin-left:11%;"><b>removefilter</b> <i>codename
+condition</i></p>
+
+<p style="margin-left:22%;">Delete all packages
+<b>listfilter</b> with the same arguments would list.</p>
+
+<p style="margin-left:11%;"><b>removesrc</b> <i>codename
+source-name</i> [<i>version</i>]</p>
+
+<p style="margin-left:22%;">Remove all packages in
+distribution <i>codename</i> belonging to source package
+<i>source-name</i>. (Limited to those with source version
+<i>version</i> if specified).</p>
+
+<p style="margin-left:22%; margin-top: 1em">If package
+tracking is activated, it will use that information to find
+the packages, otherwise it traverses all package indices for
+the distribution.</p>
+
+<p style="margin-left:11%;"><b>removesrcs</b> <i>codename
+source-name</i>[<b>=</b><i>version</i>] <i>...</i></p>
+
+<p style="margin-left:22%;">Like <b>removesrc</b>, but can
+be given multiple source names and source versions must be
+specified by appending &rsquo;<b>=</b>&rsquo; and the
+version to the name (without spaces).</p>
+
+<p style="margin-left:11%;"><b>update</b> [
+<i>codenames</i> ]</p>
+
+<p style="margin-left:22%;">Sync the specified
+distributions (all if none given) as specified in the config
+with their upstreams. See the description of
+<b>conf/updates</b> below.</p>
+
+<p style="margin-left:11%;"><b>checkupdate</b> [
+<i>codenames</i> ]</p>
+
+<p style="margin-left:22%;">Same like <b>update</b>, but
+will show what it will change instead of actually changing
+it.</p>
+
+<p style="margin-left:11%;"><b>dumpupdate</b> [
+<i>codenames</i> ]</p>
+
+<p style="margin-left:22%;">Same like <b>checkupdate</b>,
+but less suiteable for humans and more suitable for
+computers.</p>
+
+<p style="margin-left:11%;"><b>predelete</b> [
+<i>codenames</i> ]</p>
+
+<p style="margin-left:22%;">This will determine which
+packages a <b>update</b> would delete or replace and remove
+those packages. This can be useful for reducing space needed
+while upgrading, but there will be some time where packages
+are vanished from the lists so clients will mark them as
+obsolete. Plus if you cannot download a updated package in
+the (hopefully) following update run, you will end up with
+no package at all instead of an old one. This will also blow
+up <b>.diff</b> files if you are using the pdiff example or
+something similar. So be careful when using this option or
+better get some more space so that update works.</p>
+
+<p style="margin-left:11%;"><b>cleanlists</b></p>
+
+<p style="margin-left:22%;">Delete all files in
+<i>listdir</i> (default <i>basedir</i><b>/lists</b>) that do
+not belong to any update rule for any distribution. I.e. all
+files are deleted in that directory that no <b>update</b>
+command in the current configuration can use. (The files are
+usually left there, so if they are needed again they do not
+need to be downloaded again. Though in many easy cases not
+even those files will be needed.)</p>
+
+<p style="margin-left:11%;"><b>pull</b> [ <i>codenames</i>
+]</p>
+
+<p style="margin-left:22%;">pull in newer packages into the
+specified distributions (all if none given) from other
+distributions in the same repository. See the description of
+<b>conf/pulls</b> below.</p>
+
+<p style="margin-left:11%;"><b>checkpull</b> [
+<i>codenames</i> ]</p>
+
+<p style="margin-left:22%;">Same like <b>pull</b>, but will
+show what it will change instead of actually changing
+it.</p>
+
+<p style="margin-left:11%;"><b>dumppull</b> [
+<i>codenames</i> ]</p>
+
+<p style="margin-left:22%;">Same like <b>checkpull</b>, but
+less suiteable for humans and more suitable for
+computers.</p>
+
+<p style="margin-left:11%;"><b>includedeb</b> <i>codename
+.deb-filename</i></p>
+
+<p style="margin-left:22%;">Include the given binary Debian
+package (.deb) in the specified distribution, applying
+override information and guessing all values not given and
+guessable.</p>
+
+<p style="margin-left:11%;"><b>includeudeb</b> <i>codename
+.udeb-filename</i></p>
+
+<p style="margin-left:22%;">Same like <b>includedeb</b>,
+but for .udeb files.</p>
+
+<p style="margin-left:11%;"><b>includedsc</b> <i>codename
+.dsc-filename</i></p>
+
+<p style="margin-left:22%;">Include the given Debian source
+package (.dsc, including other files like .orig.tar.gz,
+.tar.gz and/or .diff.gz) in the specified distribution,
+applying override information and guessing all values not
+given and guessable.</p>
+
+<p style="margin-left:22%; margin-top: 1em">Note that .dsc
+files do not contain section or priority, but the Sources.gz
+file needs them. reprepro tries to parse .diff and .tar
+files for it, but is only able to resolve easy cases. If
+reprepro fails to extract those automatically, you have to
+either specify a DscOverride or give them via
+<b>&minus;S</b> and <b>&minus;P</b></p>
+
+<p style="margin-left:11%;"><b>include</b> <i>codename
+.changes-filename</i></p>
+
+<p style="margin-left:22%;">Include in the specified
+distribution all packages found and suitable in the
+<i>.changes</i> file, applying override information guessing
+all values not given and guessable.</p>
+
+<p style="margin-left:11%;"><b>processincoming</b>
+<i>rulesetname</i> [<i>.changes-file</i>]</p>
+
+<p style="margin-left:22%;">Scan an incoming directory and
+process the .changes files found there. If a filename is
+supplied, processing is limited to that file.
+<i>rulesetname</i> identifies which rule-set in
+<b>conf/incoming</b> determines which incoming directory to
+use and in what distributions to allow packages into. See
+the section about this file for more information.</p>
+
+<p style="margin-left:11%;"><b>check</b> [ <i>codenames</i>
+]</p>
+
+<p style="margin-left:22%;">Check if all packages in the
+specified distributions have all files needed properly
+registered.</p>
+
+<p style="margin-left:11%;"><b>checkpool</b> [ <b>fast</b>
+]</p>
+
+<p style="margin-left:22%;">Check if all files believed to
+be in the pool are actually still there and have the known
+md5sum. When <b>fast</b> is specified md5sum is not
+checked.</p>
+
+<p style="margin-left:11%;"><b>collectnewchecksums</b></p>
+
+<p style="margin-left:22%;">Calculate all supported
+checksums for all files in the pool. (Versions prior to 3.3
+did only store md5sums, 3.3 added sha1, 3.5 added
+sha256).</p>
+
+
+<p style="margin-left:11%;"><b>translatelegacychecksums</b></p>
+
+<p style="margin-left:22%;">Remove the legacy
+<b>files.db</b> file after making sure all information is
+also found in the new <b>checksums.db</b> file.
+(Alternatively you can call <b>collecnewchecksums</b> and
+remove the file on your own.)</p>
+
+<p style="margin-left:11%;"><b>rereference</b></p>
+
+<p style="margin-left:22%;">Forget which files are needed
+and recollect this information.</p>
+
+<p style="margin-left:11%;"><b>dumpreferences</b></p>
+
+<p style="margin-left:22%;">Print out which files are
+marked to be needed by whom.</p>
+
+<p style="margin-left:11%;"><b>dumpunreferenced</b></p>
+
+<p style="margin-left:22%;">Print a list of all filed
+believed to be in the pool, that are not known to be
+needed.</p>
+
+<p style="margin-left:11%;"><b>deleteunreferenced</b></p>
+
+<p style="margin-left:22%;">Remove all known files (and
+forget them) in the pool not marked to be needed by
+anything.</p>
+
+<p style="margin-left:11%;"><b>deleteifunreferenced</b> [
+<i>filekeys</i> ]</p>
+
+<p style="margin-left:22%;">Remove the given files (and
+forget them) in the pool if they are not marked to be used
+by anything. If no command line arguments are given, stdin
+is read and every line treated as one filekey. This is
+mostly useful together with
+<b>&minus;&minus;keepunreferenced</b> in <b>conf/options</b>
+or in situations where one does not want to run
+<b>deleteunreferenced</b>, which removes all files eligible
+to be deleted with this command.</p>
+
+<p style="margin-left:11%;"><b>reoverride</b> [
+<i>codenames</i> ]</p>
+
+<p style="margin-left:22%;">Reapply the override files to
+the given distributions (Or only parts thereof given by
+<b>&minus;A</b>,<b>&minus;C</b> or <b>&minus;T</b>).</p>
+
+<p style="margin-left:22%; margin-top: 1em">Note: only the
+control information is changed. Changing a section to a
+value, that would cause another component to be guessed,
+will not cause any warning.</p>
+
+<p style="margin-left:11%;"><b>redochecksums</b> [
+<i>codenames</i> ]</p>
+
+<p style="margin-left:22%;">Readd the information about
+file checksums to the package indices.</p>
+
+<p style="margin-left:22%; margin-top: 1em">Usually the
+package&rsquo;s control information is created at inclusion
+time or imported from some remote source and not changed
+later. This command modifies it to readd missing checksum
+types.</p>
+
+<p style="margin-left:22%; margin-top: 1em">Only checksums
+already known are used. To update known checkums about files
+run <b>collectnewchecksums</b> first.</p>
+
+<p style="margin-left:11%;"><b>dumptracks</b> [
+<i>codenames</i> ]</p>
+
+<p style="margin-left:22%;">Print out all information about
+tracked source packages in the given distributions.</p>
+
+<p style="margin-left:11%;"><b>retrack</b> [
+<i>codenames</i> ]</p>
+
+<p style="margin-left:22%;">Recreate a tracking database
+for the specified distributions. This contains ouf of three
+steps. First all files marked as part of a source package
+are set to unused. Then all files actually used are marked
+as thus. Finally tidytracks is called remove everything no
+longer needed with the new information about used files.</p>
+
+<p style="margin-left:22%; margin-top: 1em">(This
+behaviour, though a bit longsome, keeps even files only kept
+because of tracking mode <b>keep</b> and files not otherwise
+used but kept due to <b>includechanges</b> or its relatives.
+Before version 3.0.0 such files were lost by running
+retrack).</p>
+
+<p style="margin-left:11%;"><b>removealltracks</b> [
+<i>codenames</i> ]</p>
+
+<p style="margin-left:22%;">Removes all source package
+tracking information for the given distributions.</p>
+
+<p style="margin-left:11%;"><b>removetrack</b> <i>codename
+sourcename version</i></p>
+
+<p style="margin-left:22%;">Remove the trackingdata of the
+given version of a given sourcepackage from a given
+distribution. This also removes the references for all used
+files.</p>
+
+<p style="margin-left:11%;"><b>tidytracks</b> [
+<i>codenames</i> ]</p>
+
+<p style="margin-left:22%;">Check all source package
+tracking information for the given distributions for files
+no longer to keep.</p>
+
+<p style="margin-left:11%;"><b>copy</b>
+<i>destination-codename source-codename packages...</i></p>
+
+<p style="margin-left:22%;">Copy the given packages from
+one distribution to another. The packages are copied
+verbatim, no override files are consulted. Only components
+and architectures present in the source distribution are
+copied.</p>
+
+<p style="margin-left:11%;"><b>copysrc</b>
+<i>destination-codename source-codename source-package</i>
+[<i>versions</i>]</p>
+
+<p style="margin-left:22%;">look at each package (where
+package means, as usual, every package be it dsc, deb or
+udeb) in the distribution specified by
+<i>source-codename</i> and identifies the relevant source
+package for each. All packages matching the specified
+<i>source-package</i> name (and any <i>version</i> if
+specified) are copied to the <i>destination-codename</i>
+distribution. The packages are copied verbatim, no override
+files are consulted. Only components and architectures
+present in the source distribution are copied.</p>
+
+<p style="margin-left:11%;"><b>copymatched</b>
+<i>destination-codename source-codename glob</i></p>
+
+<p style="margin-left:22%;">Copy packages matching the
+given glob (see <b>listmatched</b>).</p>
+
+<p style="margin-left:22%; margin-top: 1em">The packages
+are copied verbatim, no override files are consulted. Only
+components and architectures present in the source
+distribution are copied.</p>
+
+<p style="margin-left:11%;"><b>copyfilter</b>
+<i>destination-codename source-codename formula</i></p>
+
+<p style="margin-left:22%;">Copy packages matching the
+given formula (see <b>listfilter</b>). (all versions if no
+version is specified). The packages are copied verbatim, no
+override files are consulted. Only components and
+architectures present in the source distribution are
+copied.</p>
+
+<p style="margin-left:11%;"><b>restore</b> <i>codename
+snapshot packages...</i> <b><br>
+restoresrc</b> <i>codename snapshot source-epackage</i>
+[<i>versions</i>] <b><br>
+restorefilter</b> <i>destination-codename snapshot
+formula</i></p>
+
+<p style="margin-left:22%;">Like the copy commands, but do
+not copy from another distribution, but from a snapshot
+generated with <b>gensnapshot</b>. Note that this blindly
+trusts the contents of the files in your <b>dists/</b>
+directory and does no checking.</p>
+
+<p style="margin-left:11%;"><b>clearvanished</b></p>
+
+<p style="margin-left:22%;">Remove all package databases
+that no longer appear in <b>conf/distributions</b>. If
+<b>&minus;&minus;delete</b> is specified, it will not stop
+if there are still packages left. Even without
+<b>&minus;&minus;delete</b> it will unreference files still
+marked as needed by this target. (Use
+<b>&minus;&minus;keepunreferenced</b> to not delete them if
+that was the last reference.)</p>
+
+<p style="margin-left:22%; margin-top: 1em">Do not forget
+to remove all exported package indices manually.</p>
+
+<p style="margin-left:11%;"><b>gensnapshot</b> <i>codename
+directoryname</i></p>
+
+<p style="margin-left:22%;">Generate a snapshot of the
+distribution specified by <i>codename</i> in the directory
+<i>dists</i><b>/</b><i>codename</i><b>/snapshots/</b><i>directoryname</i><b>/</b>
+and reference all needed files in the pool as needed by
+that. No Content files are generated and no export hooks are
+run.</p>
+
+<p style="margin-left:22%; margin-top: 1em">Note that there
+is currently no automated way to remove that snapshot again
+(not even clearvanished will unlock the referenced files
+after the distribution itself vanished). You will have to
+remove the directory yourself and tell reprepro to
+<b>_removereferences
+s=</b><i>codename</i><b>=</b><i>directoryname</i> before
+<b>deleteunreferenced</b> will delete the files from the
+pool locked by this.</p>
+
+<p style="margin-left:22%; margin-top: 1em">To access such
+a snapshot with apt, add something like the following to
+your sources.list file: <b><br>
+deb method://as/without/snapshot</b>
+<i>codename</i><b>/snapshots/</b><i>name</i> <b>main</b></p>
+
+<p style="margin-left:11%;"><b>rerunnotifiers</b> [
+<i>codenames</i> ]</p>
+
+<p style="margin-left:22%;">Run all external scripts
+specified in the <b>Log:</b> options of the specified
+distributions.</p>
+
+<p style="margin-left:11%;"><b>build&minus;needing</b>
+<i>codename architecture</i> [ <i>glob</i> ]</p>
+
+<p style="margin-left:22%;">List source packages (matching
+<i>glob</i>) that likely need a build on the given
+architecture.</p>
+
+<p style="margin-left:22%; margin-top: 1em">List all source
+package in the given distribution without a binary package
+of the given architecture built from that version of the
+source, without a <b>.changes</b> or <b>.log</b> file for
+the given architecture, with an Architecture field including
+<b>any</b>, <i>os</i><b>-any</b> (with <i>os</i> being the
+part before the hyphen in the architecture or <b>linux</b>
+if there is no hypen) or the architecture and at least one
+package in the Binary field not yet available.</p>
+
+<p style="margin-left:22%; margin-top: 1em">If instead of
+<i>architecture</i> the term <b>any</b> is used, all
+architectures are iterated and the architecture is printed
+as fourth field in every line.</p>
+
+<p style="margin-left:22%; margin-top: 1em">If the
+<i>architecture</i> is <b>all</b>, then only source packages
+with an Architecture field including <b>all</b> are
+considered (i.e. as above with real architectures but
+<b>any</b> does not suffice). Note that dpkg&minus;dev
+&lt;&lt; 1.16.1 does not both set <b>any</b> and <b>all</b>
+so source packages building both architecture dependent and
+independent packages will never show up unless built with a
+new enough dpkg&minus;source).</p>
+
+<p style="margin-left:11%;"><b>translatefilelists</b></p>
+
+<p style="margin-left:22%;">Translate the file list cache
+within <i>db</i><b>/contents.cache.db</b> into the new
+format used since reprepro 3.0.0.</p>
+
+<p style="margin-left:22%; margin-top: 1em">Make sure you
+have at least half of the space of the current
+<i>db</i><b>/contents.cache.db</b> file size available in
+that partition.</p>
+
+<p style="margin-left:11%;"><b>flood</b>
+<i>distribution</i> [<i>architecture</i>]</p>
+
+<p style="margin-left:22%;">For each architecture of
+<i>distribution</i> or for the one specified add
+architecture <b>all</b> packages from another architectures
+(but the same component or packagetype) under the following
+conditions:</p>
+
+<p style="margin-left:22%; margin-top: 1em">Packages are
+only upgraded, never downgraded. <br>
+If there is a package not being architecture <b>all</b>,
+then architecture <b>all</b> packages of the same source
+from the same source version are preferred over those that
+have no such binary sibling. <br>
+Otherwise the package with the highest version wins.</p>
+
+<p style="margin-left:22%; margin-top: 1em">You can
+restrict with architectures are looked for architecture
+<b>all</b> packages using <b>&minus;A</b> and which
+components/packagetypes are flooded by
+<b>&minus;C</b>/<b>&minus;T</b> as usual.</p>
+
+<p style="margin-left:22%; margin-top: 1em">There are
+mostly two use cases for this command: If you added an new
+distribution and want to copy all architecture all packages
+to it. Or if you included some architecture all packages
+only to some architectures using <b>&minus;A</b> to avoid
+breaking the other architectures for which the binary
+packages were still missing and now want to copy it to those
+architectures were they are unlikely to break something
+(because a newbinary is already available).</p>
+
+<p style="margin-left:11%;"><b>unusedsources</b>
+[<i>distributions</i>]</p>
+
+<p style="margin-left:22%;">List all source packages for
+which no binary package build from them is found.</p>
+
+<p style="margin-left:11%;"><b>sourcemissing</b>
+[<i>distributions</i>]</p>
+
+<p style="margin-left:22%;">List all binary packages for
+which no source package is found (the source package must be
+in the same distribution, but source packages only kept by
+package tracking is enough).</p>
+
+<p style="margin-left:11%;"><b>reportcruft</b>
+[<i>distributions</i>]</p>
+
+<p style="margin-left:22%;">List all source package
+versions that either have a source package and no longer a
+binary package or binary packages left without source
+package in the index. (Unless sourcemissing also list
+packages where the source package in only in the pool due to
+enabled tracking but no longer in the index).</p>
+
+<p style="margin-left:11%;"><b>sizes</b> [ <i>codenames</i>
+]</p>
+
+<p style="margin-left:22%;">List the size of all packages
+in the distributions specified or in all distributions.</p>
+
+<p style="margin-left:22%; margin-top: 1em">Each row
+contains 4 numbers, each being a number of bytes in a set of
+packages, which are: The packages in this distribution
+(including anything only kept because of tracking), the
+packages only in this distribution (anything in this
+distribution and a snapshot of this distribution counts as
+only in this distribution), the packages in this
+distribution and its snapshots, the packages only in this
+distribution or its snapshots.</p>
+
+<p style="margin-left:22%; margin-top: 1em">If more than
+one distribution is selected, also list a sum of those (in
+which &rsquo;Only&rsquo; means only in selected ones, and
+not only only in one of the selected ones).</p>
+
+<p style="margin-left:11%;"><b>repairdescriptions</b> [
+<i>codenames</i> ]</p>
+
+<p style="margin-left:22%;">Look for binary packages only
+having a short description and try to get the long
+description from the .deb file (and also remove a possible
+Description-md5 in this case).</p>
+
+<p style="margin-left:11%; margin-top: 1em"><b>internal
+commands</b> <br>
+These are hopefully never needed, but allow manual
+intervention. <b>WARNING:</b> Is is quite easy to get into
+an inconsistent and/or unfixable state. <b><br>
+_detect</b> [ <i>filekeys</i> ]</p>
+
+<p style="margin-left:22%;">Look for the files, which
+<i>filekey</i> is given as argument or as a line of the
+input (when run without arguments), and calculate their
+md5sum and add them to the list of known files. (Warning:
+this is a low level operation, no input validation or
+normalization is done.)</p>
+
+<p style="margin-left:11%;"><b>_forget</b> [
+<i>filekeys</i> ]</p>
+
+<p style="margin-left:22%;">Like <b>_detect</b> but remove
+the given <i>filekey</i> from the list of known files.
+(Warning: this is a low level operation, no input validation
+or normalization is done.)</p>
+
+<p style="margin-left:11%;"><b>_listmd5sums</b></p>
+
+<p style="margin-left:22%;">Print a list of all known files
+and their md5sums.</p>
+
+<p style="margin-left:11%;"><b>_listchecksums</b></p>
+
+<p style="margin-left:22%;">Print a list of all known files
+and their recorded checksums.</p>
+
+<p style="margin-left:11%;"><b>_addmd5sums</b></p>
+
+<p style="margin-left:22%;">alias for the newer</p>
+
+<p style="margin-left:11%;"><b>_addchecksums</b></p>
+
+<p style="margin-left:22%;">Add information of known files
+(without any check done) in the strict format of
+_listchecksums output (i.e. don&rsquo;t dare to use a single
+space anywhere more than needed).</p>
+
+<p style="margin-left:11%;"><b>_dumpcontents</b>
+<i>identifier</i></p>
+
+<p style="margin-left:22%;">Printout all the stored
+information of the specified part of the repository. (Or in
+other words, the content the corresponding Packages or
+Sources file would get)</p>
+
+<p style="margin-left:11%;"><b>_addreference</b> <i>filekey
+identifier</i></p>
+
+<p style="margin-left:22%;">Manually mark <i>filekey</i> to
+be needed by <i>identifier</i></p>
+
+<p style="margin-left:11%;"><b>_addreferences</b>
+<i>identifier</i> [ <i>filekeys</i> ]</p>
+
+<p style="margin-left:22%;">Manually mark one or more
+<i>filekeys</i> to be needed by <i>identifier</i>. If no
+command line arguments are given, stdin is read and every
+line treated as one filekey.</p>
+
+<p style="margin-left:11%;"><b>_removereferences</b>
+<i>identifier</i></p>
+
+<p style="margin-left:22%;">Remove all references what is
+needed by <i>identifier.</i></p>
+
+<p style="margin-left:11%;"><b>__extractcontrol</b>
+<i>.deb-filename</i></p>
+
+<p style="margin-left:22%;">Look what reprepro believes to
+be the content of the <b>control</b> file of the specified
+.deb-file.</p>
+
+<p style="margin-left:11%;"><b>__extractfilelist</b>
+<i>.deb-filename</i></p>
+
+<p style="margin-left:22%;">Look what reprepro believes to
+be the list of files of the specified .deb-file.</p>
+
+<p style="margin-left:11%;"><b>_fakeemptyfilelist</b>
+<i>filekey</i></p>
+
+<p style="margin-left:22%;">Insert an empty filelist for
+<i>filekey</i>. This is a evil hack around broken .deb files
+that cannot be read by reprepro.</p>
+
+<p style="margin-left:11%;"><b>_addpackage</b> <i>codenam
+filename packages...</i></p>
+
+<p style="margin-left:22%;">Add packages from the specified
+filename to part specified by <b>&minus;C &minus;A</b> and
+<b>&minus;T</b> of the specified distribution. Very strange
+things can happen if you use it improperly.</p>
+
+<p style="margin-left:11%;"><b>__dumpuncompressors</b></p>
+
+<p style="margin-left:22%;">List what compressions format
+can be uncompressed and how.</p>
+
+<p style="margin-left:11%;"><b>__uncompress</b> <i>format
+compressed-file uncompressed-file</i></p>
+
+<p style="margin-left:22%;">Use builtin or external
+uncompression to uncompress the specified file of the
+specified format into the specified target.</p>
+
+<p style="margin-left:11%;"><b>_listconfidentifiers</b>
+<i>identifier</i> [ <i>distributions...</i> ]</p>
+
+<p style="margin-left:22%;">Print - one per line - all
+identifiers of subdatabases as derived from the
+configuration. If a list of distributions is given, only
+identifiers of those are printed.</p>
+
+<p style="margin-left:11%;"><b>_listdbidentifiers</b>
+<i>identifier</i> [ <i>distributions...</i> ]</p>
+
+<p style="margin-left:22%;">Print - one per line - all
+identifiers of subdatabases in the current database. This
+will be a subset of the ones printed by
+<b>_listconfidentifiers</b> or most commands but
+<b>clearvanished</b> will refuse to run, and depending on
+the database compatibility version, will include all those
+if reprepro was run since the config was last changed.</p>
+
+<h2>CONFIG FILES
+<a name="CONFIG FILES"></a>
+</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>reprepo</b>
+uses three config files, which are searched in the directory
+specified with <b>&minus;&minus;confdir</b> or in the
+<b>conf/</b> subdirectory of the <i>basedir</i>.</p>
+
+<p style="margin-left:11%; margin-top: 1em">If a file
+<b>options</b> exists, it is parsed line by line. Each line
+can be the long name of a command line option (without the
+&minus;&minus;) plus an argument, where possible. Those are
+handled as if they were command line options given before
+(and thus lower priority than) any other command line
+option. (and also lower priority than any environment
+variable).</p>
+
+<p style="margin-left:11%; margin-top: 1em">To allow
+command line options to override options file options, most
+boolean options also have a corresponding form starting with
+<b>&minus;&minus;no</b>.</p>
+
+<p style="margin-left:11%; margin-top: 1em">(The only
+exception is when the path to look for config files changes,
+the options file will only opened once and of course before
+any options within the options file are parsed.)</p>
+
+<p style="margin-left:11%; margin-top: 1em">The file
+<b>distributions</b> is always needed and describes what
+distributions to manage, while <b>updates</b> is only needed
+when syncing with external repositories and <b>pulls</b> is
+only needed when syncing with repositories in the same
+reprepro database.</p>
+
+<p style="margin-left:11%; margin-top: 1em">The last three
+are in the format control files in Debian are in, i.e.
+paragraphs separated by empty lines consisting of fields.
+Each field consists of a fieldname, followed by a colon,
+possible whitespace and the data. A field ends with a
+newline not followed by a space or tab.</p>
+
+<p style="margin-left:11%; margin-top: 1em">Lines starting
+with # as first character are ignored, while in other lines
+the # character and everything after it till the newline
+character are ignored.</p>
+
+<p style="margin-left:11%; margin-top: 1em">A paragraph can
+also consist of only a single field
+&quot;<b>!include:</b>&quot; which causes the named file
+(relative to confdir unless starting with <b>~/</b>,
+<b>+b/</b>, <b>+c/</b> or <b>/</b> ) to be read as if it was
+found at this place.</p>
+
+<p style="margin-left:11%; margin-top: 1em">Each of the
+three files or a file included as described above can also
+be a directory, in which case all files it contains with a
+filename ending in <b>.conf</b> and not starting with
+<b>.</b> are read.</p>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>conf/distributions
+<br>
+Codename</b></p>
+
+<p style="margin-left:22%;">This required field is the
+unique identifier of a distribution and used as directory
+name within <b>dists/</b> It is also copied into the Release
+files.</p>
+
+<p style="margin-left:22%; margin-top: 1em">Note that this
+name is not supposed to change. You most likely <b>never
+ever</b> want a name like <b>testing</b> or <b>stable</b>
+here (those are suite names and supposed to point to another
+distribution later).</p>
+
+<table width="100%" border="0" rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="7%">
+
+
+<p><b>Suite</b></p></td>
+<td width="4%"></td>
+<td width="78%">
+
+
+<p>This optional field is simply copied into the Release
+files. In Debian it contains names like stable, testing or
+unstable. To create symlinks from the Suite to the Codename,
+use the <b>createsymlinks</b> command of reprepro.</p></td></tr>
+</table>
+
+<p style="margin-left:11%;"><b>FakeComponentPrefix</b></p>
+
+<p style="margin-left:22%;">If this field is present, its
+argument is added - separated by a slash - before every
+Component written to the main Release file (unless the
+component already starts with it), and removed from the end
+of the Codename and Suite fields in that file. Also if a
+component starts with it, its directory in the dists dir is
+shortened by this. <br>
+So <b><br>
+Codename: bla/updates <br>
+Suite: foo/updates <br>
+FakeComponentPrefix: updates <br>
+Components: main bad</b> <br>
+will create a Release file with <b><br>
+Codename: bla <br>
+Suite: foo <br>
+Components: updates/main updates/bad</b> <br>
+in it, but otherwise nothing is changed, while <b><br>
+Codename: bla/updates <br>
+Suite: foo/updates <br>
+FakeComponentPrefix: updates <br>
+Components: updates/main updates/bad</b> <br>
+will also create a Release file with <b><br>
+Codename: bla <br>
+Suite: foo <br>
+Components: updates/main updates/bad</b> <br>
+but the packages will actually be in the components
+<b>updates/main</b> and <b>updates/bad</b>, most likely
+causing the same file using duplicate storage space.</p>
+
+<p style="margin-left:22%; margin-top: 1em">This makes the
+distribution look more like Debian&rsquo;s security archive,
+thus work around problems with apt&rsquo;s workarounds for
+that.</p>
+
+<p style="margin-left:11%;"><b>AlsoAcceptFor</b></p>
+
+<p style="margin-left:22%;">A list of distribution names.
+When a <b>.changes</b> file is told to be included into this
+distribution with the <b>include</b> command and the
+distribution header of that file is neither the codename,
+nor the suite name, nor any name from the list, a
+<b>wrongdistribution</b> error is generated. The
+<b>process_incoming</b> command will also use this field,
+see the description of <b>Allow</b> and <b>Default</b> from
+the <b>conf/incoming</b> file for more information.</p>
+
+<p style="margin-left:11%;"><b>Version</b></p>
+
+<p style="margin-left:22%;">This optional field is simply
+copied into the Release files.</p>
+
+<table width="100%" border="0" rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="9%">
+
+
+<p><b>Origin</b></p></td>
+<td width="2%"></td>
+<td width="78%">
+
+
+<p>This optional field is simply copied into the Release
+files.</p> </td></tr>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="9%">
+
+
+<p><b>Label</b></p></td>
+<td width="2%"></td>
+<td width="78%">
+
+
+<p>This optional field is simply copied into the Release
+files.</p> </td></tr>
+</table>
+
+<p style="margin-left:11%;"><b>NotAutomatic</b></p>
+
+<p style="margin-left:22%;">This optional field is simply
+copied into the Release files. (The value is handled as an
+arbitrary string, though anything but <b>yes</b> does not
+make much sense right now.)</p>
+
+
+<p style="margin-left:11%;"><b>ButAutomaticUpgrades</b></p>
+
+<p style="margin-left:22%;">This optional field is simply
+copied into the Release files. (The value is handled as an
+arbitrary string, though anything but <b>yes</b> does not
+make much sense right now.)</p>
+
+<p style="margin-left:11%;"><b>Description</b></p>
+
+<p style="margin-left:22%;">This optional field is simply
+copied into the Release files.</p>
+
+<p style="margin-left:11%;"><b>Architectures</b></p>
+
+<p style="margin-left:22%;">This required field lists the
+binary architectures within this distribution and if it
+contains <b>source</b> (i.e. if there is an item
+<b>source</b> in this line this Distribution has source. All
+other items specify things to be put after
+&quot;binary&minus;&quot; to form directory names and be
+checked against &quot;Architecture:&quot; fields.)</p>
+
+<p style="margin-left:22%; margin-top: 1em">This will also
+be copied into the Release files. (With exception of the
+<b>source</b> item, which will not occur in the topmost
+Release file whether it is present here or not)</p>
+
+<p style="margin-left:11%;"><b>Components</b></p>
+
+<p style="margin-left:22%;">This required field lists the
+component of a distribution. See <b>GUESSING</b> for rules
+which component packages are included into by default. This
+will also be copied into the Release files.</p>
+
+<p style="margin-left:11%;"><b>UDebComponents</b></p>
+
+<p style="margin-left:22%;">Components with a
+debian&minus;installer subhierarchy containing .udebs. (E.g.
+simply &quot;main&quot;)</p>
+
+<table width="100%" border="0" rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="9%">
+
+
+<p><b>Update</b></p></td>
+<td width="2%"></td>
+<td width="78%">
+
+
+<p>When this field is present, it describes which update
+rules are used for this distribution. There also can be a
+magic rule minus (&quot;&minus;&quot;), see below.</p></td></tr>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="9%">
+
+
+<p><b>Pull</b></p></td>
+<td width="2%"></td>
+<td width="78%">
+
+
+<p>When this field is present, it describes which pull
+rules are used for this distribution. Pull rules are like
+Update rules, but get their stuff from other distributions
+and not from external sources. See the description for
+<b>conf/pulls</b>.</p> </td></tr>
+</table>
+
+<p style="margin-left:11%;"><b>SignWith</b></p>
+
+<p style="margin-left:22%;">When this field is present, a
+Release.gpg file will be generated. If the value is
+&quot;yes&quot; or &quot;default&quot;, the default key of
+gpg is used. If the field starts with an exlamation mark
+(&quot;!&quot;), the given script is executed to do the
+signing. Otherwise the value will be given to libgpgme to
+determine to key to use.</p>
+
+<p style="margin-left:22%; margin-top: 1em">If there are
+problems with signing, you can try <b><br>
+gpg &minus;&minus;list&minus;secret&minus;keys</b>
+<i>value</i> <br>
+to see how gpg could interprete the value. If that command
+does not list any keys or multiple ones, try to find some
+other value (like the keyid), that gpg can more easily
+associate with a unique key.</p>
+
+<p style="margin-left:22%; margin-top: 1em">If this key has
+a passphrase, you need to use gpg&minus;agent or the
+insecure option
+<b>&minus;&minus;ask&minus;passphrase</b>.</p>
+
+<p style="margin-left:22%; margin-top: 1em">A
+&rsquo;<b>!</b>&rsquo; hook script is looked for in the
+confdir, unless it starts with <b>~/</b>, <b>./</b>,
+<b>+b/</b>, <b>+o/</b>, <b>+c/</b> or <b>/</b> . Is gets
+three command line arguments: The filename to sign, an empty
+argument or the filename to create with an inline signature
+(i.e. InRelease) and an empty argument or the filename to
+create an detached signature (i.e. Release.gpg). The script
+may generate no Release.gpg file if it choses to (then the
+repository will look like unsigned for older clients), but
+generating empty files is not allowed. Reprepro waits for
+the script to finish and will abort the exporting of the
+distribution this signing is part of unless the scripts
+returns normally with exit code 0. Using a space after ! is
+recommended to avoid incompatibilities with possible future
+extensions.</p>
+
+<p style="margin-left:11%;"><b>DebOverride</b></p>
+
+<p style="margin-left:22%;">When this field is present, it
+describes the override file used when including .deb
+files.</p>
+
+<p style="margin-left:11%;"><b>UDebOverride</b></p>
+
+<p style="margin-left:22%;">When this field is present, it
+describes the override file used when including .udeb
+files.</p>
+
+<p style="margin-left:11%;"><b>DscOverride</b></p>
+
+<p style="margin-left:22%;">When this field is present, it
+describes the override file used when including .dsc
+files.</p>
+
+<p style="margin-left:11%;"><b>DebIndices</b>,
+<b>UDebIndices</b>, <b>DscIndices</b></p>
+
+<p style="margin-left:22%;">Choose what kind of Index files
+to export. The first part describes what the Index file
+shall be called. The second argument determines the name of
+a Release file to generate or not to generate if missing.
+Then at least one of &quot;<b>.</b>&quot;,
+&quot;<b>.gz</b>&quot;, &quot;<b>.xz</b>&quot; or
+&quot;<b>.bz2</b>&quot; specifying whether to generate
+uncompressed output, gzipped output, bzip2ed output or any
+combination. (bzip2 is only available when compiled with
+bzip2 support, so it might not be available when you
+compiled it on your own, same for xz and liblzma). If an
+argument not starting with dot follows, it will be executed
+after all index files are generated. (See the examples for
+what argument this gets). The default is: <br>
+DebIndices: Packages Release . .gz <br>
+UDebIndices: Packages . .gz <br>
+DscIndices: Sources Release .gz</p>
+
+<p style="margin-left:11%;"><b>Contents</b></p>
+
+<p style="margin-left:22%;">Enable the creation of Contents
+files listing all the files within the binary packages of a
+distribution. (Which is quite slow, you have been
+warned).</p>
+
+<p style="margin-left:22%; margin-top: 1em">In earlier
+versions, the first argument was a rate at which to extract
+file lists. As this did not work and was no longer easily
+possible after some factorisation, this is no longer
+supported.</p>
+
+<p style="margin-left:22%; margin-top: 1em">The arguments
+of this field is a space separated list of options. If there
+is a <b>udebs</b> keyword, <b>.udeb</b>s are also listed (in
+a file called <b>uContents&minus;</b><i>architecture</i>.)
+If there is a <b>nodebs</b> keyword, <b>.deb</b>s are not
+listed. (Only useful together with <b>udebs</b>) If there is
+at least one of the keywords <b>.</b>, <b>.gz</b>,
+<b>.xz</b> and/or <b>.bz2</b>, the Contents files are
+written uncompressed, gzipped and/or bzip2ed instead of only
+gzipped.</p>
+
+<p style="margin-left:22%; margin-top: 1em">If there is a
+<b>percomponent</b> then one Contents&minus;<i>arch</i> file
+per component is created. If there is a <b>allcomponents</b>
+then one global Contents&minus;<i>arch</i> file is
+generated. If both are given, both are created. If none of
+both is specified then <b>percomponent</b> is taken as
+default (earlier versions had other defaults).</p>
+
+<p style="margin-left:22%; margin-top: 1em">The switches
+<b>compatsymlink</b> or <b>nocompatsymlink</b> (only
+possible if <b>allcomponents</b> was not specified
+explicitly) control whether a compatibility symlink is
+created so old versions of apt&minus;file looking for the
+component independent filenames at least see the contents of
+the first component.</p>
+
+<p style="margin-left:22%; margin-top: 1em">Unless
+<b>allcomponents</b> is given, <b>compatsymlinks</b>
+currently is the default, but that will change in some
+future (current estimate: after wheezy was released)</p>
+
+
+<p style="margin-left:11%;"><b>ContentsArchitectures</b></p>
+
+<p style="margin-left:22%;">Limit generation of Contents
+files to the architectures given. If this field is not
+there, all architectures are processed. An empty field means
+no architectures are processed, thus not very useful.</p>
+
+<p style="margin-left:11%;"><b>ContentsComponents</b></p>
+
+<p style="margin-left:22%;">Limit what components are
+processed for the <b>Contents&minus;</b><i>arch</i> files to
+the components given. If this field is not there, all
+components are processed. An empty field is equivalent to
+specify <b>nodebs</b> in the <b>Contents</b> field, while a
+non-empty field overrides a <b>nodebs</b> there.</p>
+
+<p style="margin-left:11%;"><b>ContentsUComponents</b></p>
+
+<p style="margin-left:22%;">Limit what components are
+processed for the uContents files to the components given.
+If this field is not there and there is the <b>udebs</b>
+keyword in the Contents field, all .udebs of all components
+are put in the <b>uContents.</b><i>arch</i> files. If this
+field is not there and there is no <b>udebs</b> keyword in
+the Contents field, no <b>uContents&minus;</b><i>arch</i>
+files are generated at all. A non-empty fields implies
+generation of <b>uContents&minus;</b><i>arch</i> files (just
+like the <b>udebs</b> keyword in the Contents field), while
+an empty one causes no <b>uContents&minus;</b><i>arch</i>
+files to be generated.</p>
+
+<p style="margin-left:11%;"><b>Uploaders</b></p>
+
+<p style="margin-left:22%;">Specifies a file (relative to
+confdir if not starting with <b>~/</b>, <b>+b/</b>,
+<b>+c/</b> or <b>/</b> ) to specify who is allowed to upload
+packages. Without this there are no limits, and this file
+can be ignored via <b>&minus;&minus;ignore=uploaders</b>.
+See the section <b>UPLOADERS FILES</b> below.</p>
+
+<p style="margin-left:11%;"><b>Tracking</b></p>
+
+<p style="margin-left:22%;">Enable the (experimental)
+tracking of source packages. The argument list needs to
+contain exactly one of the following: <b><br>
+keep</b> Keeps all files of a given source package, until
+that is deleted explicitly via <b>removetrack</b>. This is
+currently the only possibility to keep older packages around
+when all indices contain newer files. <b><br>
+all</b> Keep all files belonging to a given source package
+until the last file of it is no longer used within that
+distribution. <b><br>
+minimal</b> Remove files no longer included in the tracked
+distribution. (Remove changes, logs and includebyhand files
+once no file is in any part of the distribution). <br>
+And any number of the following (or none): <b><br>
+includechanges</b> Add the .changes file to the tracked
+files of a source package. Thus it is also put into the
+pool. <b><br>
+includebyhand</b> Add <b>byhand</b> and
+<b>raw&minus;</b><i>*</i> files to the tracked files and
+thus in the pool. <b><br>
+includelogs</b> Add log files to the tracked files and thus
+in the pool. (Not that putting log files in changes files is
+a reprepro extension not found in normal changes files)
+<b><br>
+embargoalls</b> Not yet implemented. <b><br>
+keepsources</b> Even when using minimal mode, do not remove
+source files until no file is needed any more. <b><br>
+needsources</b> Not yet implemented.</p>
+
+<table width="100%" border="0" rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+<p><b>Log</b></p></td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p>Specify a file to log additions and removals of this
+distribution into and/or external scripts to call when
+something is added or removed. The rest of the <b>Log:</b>
+line is the filename, every following line (as usual, have
+to begin with a single space) the name of a script to call.
+The name of the script may be preceded with options of the
+form
+<b>&minus;&minus;type=</b>(<b>dsc</b>|<b>deb</b>|<b>udeb</b>),
+<b>&minus;&minus;architecture=</b><i>name</i> or
+<b>&minus;&minus;component=</b><i>name</i> to only call the
+script for some parts of the distribution. An script with
+argument <b>&minus;&minus;changes</b> is called when a
+<b>.changes</b> file was accepted by <b>include</b> or
+<b>processincoming</b> (and with other arguments). Both type
+of scripts can have a
+<b>&minus;&minus;via=</b><i>command</i> specified, in which
+case it is only called when caused by reprepro command
+<i>command</i>.</p> </td></tr>
+</table>
+
+<p style="margin-left:22%; margin-top: 1em">For information
+how it is called and some examples take a look at
+manual.html in reprepro&rsquo;s source or
+<b>/usr/share/doc/reprepro/</b></p>
+
+<p style="margin-left:22%; margin-top: 1em">If the filename
+for the log files does not start with a slash, it is
+relative to the directory specified with
+<b>&minus;&minus;logdir</b>, the scripts are relative to
+<b>&minus;&minus;confdir</b> unless starting with <b>~/</b>,
+<b>+b/</b>, <b>+c/</b> or <b>/</b>.</p>
+
+<p style="margin-left:11%;"><b>ValidFor</b></p>
+
+<p style="margin-left:22%;">If this field exists, an
+Valid&minus;Until field is put into generated <b>Release</b>
+files for this distribution with an date as much in the
+future as the argument specifies.</p>
+
+<p style="margin-left:22%; margin-top: 1em">The argument
+has to be an number followed by one of the units <b>d</b>,
+<b>m</b> or <b>y</b>, where <b>d</b> means days, <b>m</b>
+means 31 days and <b>y</b> means 365 days. So <b>ValidFor:
+1m 11 d</b> causes the generation of a
+<b>Valid&minus;Until:</b> header in Release files that
+points 42 days into the future.</p>
+
+<p style="margin-left:11%;"><b>ReadOnly</b></p>
+
+<p style="margin-left:22%;">Disallow all modifications of
+this distribution or its directory in
+<b>dists/</b><i>codename</i> (with the exception of snapshot
+subdirectories).</p>
+
+<p style="margin-left:11%;"><b>ByHandHooks</b></p>
+
+<p style="margin-left:22%;">This species hooks to call for
+handling byhand/raw files by processincoming (and in future
+versions perhaps by include).</p>
+
+<p style="margin-left:22%; margin-top: 1em">Each line
+consists out of 4 arguments: A glob pattern for the section
+(clasically <b>byhand</b>, though Ubuntu uses
+<b>raw&minus;</b>*), a glob pattern for the priority (not
+usually used), and a glob pattern for the filename.</p>
+
+<p style="margin-left:22%; margin-top: 1em">The 4th
+argument is the script to be called when all of the above
+match. It gets 5 arguments: the codename of the
+distribution, the section (usually <b>byhand</b>), the
+priority (usually only <b>&minus;</b>), the filename in the
+changes file and the full filename (with processincoming in
+the secure TempDir).</p>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>conf/updates</b></p>
+
+<table width="100%" border="0" rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="9%">
+
+
+<p><b>Name</b></p></td>
+<td width="2%"></td>
+<td width="78%">
+
+
+<p>The name of this update&minus;upstream as it can be used
+in the <b>Update</b> field in conf/distributions.</p></td></tr>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="9%">
+
+
+<p><b>Method</b></p></td>
+<td width="2%"></td>
+<td width="78%">
+
+
+<p>An URI as one could also give it apt, e.g.
+<i>http://ftp.debian.de/debian</i> which is simply given to
+the corresponding <b>apt&minus;get</b> method. (So either
+<b>apt&minus;get has to be installed, or you have to point
+with &minus;&minus;methoddir</b> to a place where such
+methods are found.</p></td></tr>
+</table>
+
+<p style="margin-left:11%;"><b>Fallback</b></p>
+
+<p style="margin-left:22%;">(Still experimental:) A
+fallback URI, where all files are tried that failed the
+first one. They are given to the same method as the previous
+URI (e.g. both http://), and the fallback-server must have
+everything at the same place. No recalculation is done, but
+single files are just retried from this location.</p>
+
+<table width="100%" border="0" rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="9%">
+
+
+<p><b>Config</b></p></td>
+<td width="2%"></td>
+<td width="78%">
+
+
+<p>This can contain any number of lines, each in the format
+<b>apt&minus;get &minus;&minus;option</b> would expect.
+(Multiple lines - as always - marked with leading
+spaces).</p> </td></tr>
+</table>
+
+<p style="margin-left:11%; margin-top: 1em">For example:
+Config: Acquire::Http::Proxy=http://proxy.yours.org:8080</p>
+
+<table width="100%" border="0" rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="7%">
+
+
+<p style="margin-top: 1em"><b>From</b></p></td>
+<td width="4%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em">The name of another update rule
+this rules derives from. The rule containing the <b>From</b>
+may not contain <b>Method</b>, <b>Fallback</b> or
+<b>Config</b>. All other fields are used from the rule
+referenced in <b>From</b>, unless found in this containing
+the <b>From</b>. The rule referenced in <b>From</b> may
+itself contain a <b>From</b>. Reprepro will only assume two
+remote index files are the same, if both get their
+<b>Method</b> information from the same rule.</p></td></tr>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="7%">
+
+
+<p><b>Suite</b></p></td>
+<td width="4%"></td>
+<td width="78%">
+
+
+<p>The suite to update from. If this is not present, the
+codename of the distribution using this one is used. Also
+&quot;*/whatever&quot; is replaced by
+&quot;&lt;codename&gt;/whatever&quot;</p> </td></tr>
+</table>
+
+<p style="margin-left:11%;"><b>Components</b></p>
+
+<p style="margin-left:22%;">The components to update. Each
+item can be either the name of a component or a pair of a
+upstream component and a local component separated with
+&quot;&gt;&quot;. (e.g. &quot;main&gt;all contrib&gt;all
+non&minus;free&gt;notall&quot;)</p>
+
+<p style="margin-left:22%; margin-top: 1em">If this field
+is not there, all components from the distribution to update
+are tried.</p>
+
+<p style="margin-left:22%; margin-top: 1em">An empty field
+means no source or .deb packages are updated by this rule,
+but only .udeb packages, if there are any.</p>
+
+<p style="margin-left:22%; margin-top: 1em">A rule might
+list components not available in all distributions using
+this rule. In this case unknown components are silently
+ignored. (Unless you start reprepro with the
+<b>&minus;&minus;fast</b> option, it will warn about
+components unusable in all distributions using that rule. As
+exceptions, unusable components called <b>none</b> are never
+warned about, for compatibility with versions prior to 3.0.0
+where and empty field had a different meaning.)</p>
+
+<p style="margin-left:11%;"><b>Architectures</b></p>
+
+<p style="margin-left:22%;">The architectures to update. If
+omitted all from the distribution to update from. (As with
+components, you can use &quot;&gt;&quot; to download from
+one architecture and add into another one. (This only
+determine in which Package list they land, it neither
+overwrites the Architecture line in its description, nor the
+one in the filename determined from this one. In other
+words, it is no really useful without additional
+filtering))</p>
+
+<p style="margin-left:11%;"><b>UDebComponents</b></p>
+
+<p style="margin-left:22%;">Like <b>Components</b> but for
+the udebs.</p>
+
+<p style="margin-left:11%;"><b>VerifyRelease</b></p>
+
+<p style="margin-left:22%;">Download the <b>Release.gpg</b>
+file and check if it is a signature of the
+<b>Releasefile</b> with the key given here. (In the Format
+as &quot;gpg &minus;&minus;with&minus;colons
+&minus;&minus;list&minus;key&quot; prints it, i.e. the last
+16 hex digits of the fingerprint) Multiple keys can be
+specified by separating them with a &quot;<b>|</b>&quot;
+sign. Then finding a signature from one of the will suffice.
+To allow revoked or expired keys, add a &quot;<b>!</b>&quot;
+behind a key. (but to accept such signatures, the
+appropriate <b>&minus;&minus;ignore</b> is also needed). To
+also allow subkeys of a specified key, add a
+&quot;<b>+</b>&quot; behind a key.</p>
+
+<p style="margin-left:11%;"><b>IgnoreRelease: yes</b></p>
+
+<p style="margin-left:22%;">If this is present, no
+<b>InRelease</b> or <b>Release</b> file will be downloaded
+and thus the md5sums of the other index files will not be
+checked.</p>
+
+<p style="margin-left:11%;"><b>GetInRelease: no</b></p>
+
+<p style="margin-left:22%;">IF this is present, no
+<b>InRelease</b> file is downloaded but only <b>Release</b>
+(and <b>Release.gpg</b> ) are tried.</p>
+
+<table width="100%" border="0" rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="6%">
+
+
+<p><b>Flat</b></p></td>
+<td width="5%"></td>
+<td width="78%">
+
+
+<p>If this field is in an update rule, it is supposed to be
+a flat repository, i.e. a repository without a <b>dists</b>
+dir and no subdirectories for the index files. (If the
+corresponding <b>sources.list</b> line has the suite end
+with a slash, then you might need this one.) The argument
+for the <b>Flat:</b> field is the Component to put those
+packages into. No <b>Components</b> or <b>UDebComponents</b>
+fields are allowed in a flat update rule. If the
+<b>Architecture</b> field has any <b>&gt;</b> items, the
+part left of the &quot;<b>&gt;</b>&quot; is ignored.</p></td></tr>
+</table>
+
+<p style="margin-left:22%;">For example the
+<b>sources.list</b> line <br>
+deb http://cran.r&minus;project.org/bin/linux/debian
+etch&minus;cran/ <br>
+would translate to <br>
+Name: R <br>
+Method: http://cran.r&minus;project.org/bin/linux/debian
+<br>
+Suite: etch&minus;cran <br>
+Flat: whatevercomponentyoudlikethepackagesin</p>
+
+<p style="margin-left:11%;"><b>IgnoreHashes</b></p>
+
+<p style="margin-left:22%;">This directive tells reprepro
+to not check the listed hashes in the downloaded Release
+file (and only in the Release file). Possible values are
+currently <b>md5</b>, <b>sha1</b> and <b>sha256</b>.</p>
+
+<p style="margin-left:22%; margin-top: 1em">Note that this
+does not speed anything up in any measurable way. The only
+reason to specify this if the Release file of the
+distribution you want to mirror from uses a faulty algorithm
+implementation. Otherwise you will gain nothing and only
+lose security.</p>
+
+<p style="margin-left:11%;"><b>FilterFormula</b></p>
+
+<p style="margin-left:22%;">This can be a formula to
+specify which packages to accept from this source. The
+format is misusing the parser intended for Dependency lines.
+To get only architecture all packages use &quot;architecture
+(== all)&quot;, to get only at least important packages use
+&quot;priority (==required) | priority
+(==important)&quot;.</p>
+
+<p style="margin-left:22%; margin-top: 1em">See the
+description of the listfilter command for the semantics of
+formulas.</p>
+
+<p style="margin-left:11%;"><b>FilterList</b>,
+<b>FilterSrcList</b></p>
+
+<p style="margin-left:22%;">These take at least two
+arguments: The first one is the default action when
+something is not found in the list, then a list of filenames
+(relative to <b>&minus;&minus;confdir</b>, if not starting
+with <b>~/</b>, <b>+b/</b>, <b>+c/</b> or <b>/</b> ) in the
+format of dpkg &minus;&minus;get&minus;selections and only
+packages listed in there as <b>install</b> or that are
+already there and are listed with <b>upgradeonly</b> will be
+installed. Things listed as <b>deinstall</b> or <b>purge</b>
+will be ignored. Packages having <b>supersede</b> will not
+be installed but instead cause the removal of packages with
+strictly smaller version (i.e. if a package would be
+replaced by this package if this was <b>install</b>, it will
+be removed instead and no new package being installed).
+Things listed with <b>warning</b> are also ignored, but a
+warning message is printed to stderr. A package being
+<b>hold</b> will not be upgraded but also not downgraded or
+removed by previous delete rules. To abort the whole
+upgrade/pull if a package is available, use <b>error</b>.
+Instead of a keyword you can also use &quot;<b>=</b>
+<i>version</i>&quot; which is treated like <b>install</b> if
+the version matches and like no entry if it does not match.
+Only one such entry per package is currently supported and
+the version is currently compared as string.</p>
+
+<p style="margin-left:22%; margin-top: 1em">If there is
+both <b>FilterList</b> and <b>FilterSrcList</b> then the
+first is used for <b>.deb</b> and <b>.udeb</b> and the
+second for <b>.dsc</b> packages. If there is only
+<b>FilterList</b> that is applied to everything. If there is
+only <b>FilterSrcList</b> that is applied to everything,
+too, but the source package name (and source version) is
+used to do the lookup.</p>
+
+<p style="margin-left:11%;"><b>OmitExtraSourceOnly</b></p>
+
+<p style="margin-left:22%;">This field controls whether
+source packages with Extra-Source-Only set are ignore when
+getting source packages. Withouth this option or if it is
+true, those source packages are ignored, while if set to no
+or false, those source packages are also condidates if no
+other filter excludes them. (The default of true will likely
+change once reprepro supports multiple versions of a package
+or has other means to keep the source packages around).</p>
+
+<p style="margin-left:11%;"><b>ListHook</b></p>
+
+<p style="margin-left:22%;">If this is given, it is
+executed for all downloaded index files with the downloaded
+list as first and a filename that will be used instead of
+this. (e.g. &quot;ListHook: /bin/cp&quot; works but does
+nothing.)</p>
+
+<p style="margin-left:22%; margin-top: 1em">If a file will
+be read multiple times, it is processed multiple times, with
+the environment variables <b>REPREPRO_FILTER_CODENAME</b>,
+<b>REPREPRO_FILTER_PACKAGETYPE</b>,
+<b>REPREPRO_FILTER_COMPONENT</b> and
+<b>REPREPRO_FILTER_ARCHITECTURE</b> set to the where this
+file will be added and <b>REPREPRO_FILTER_PATTERN</b> to the
+name of the update rule causing it.</p>
+
+<p style="margin-left:11%;"><b>ListShellHook</b></p>
+
+<p style="margin-left:22%;">This is like ListHook, but the
+whole argument is given to the shell as argument, and the
+input and output file are stdin and stdout.</p>
+
+<p style="margin-left:22%; margin-top: 1em">i.e.: <br>
+ListShellHook: cat <br>
+works but does nothing but useless use of a shell and cat,
+while <br>
+ListShellHook: grep&minus;dctrl &minus;X &minus;S apt
+&minus;o &minus;X &minus;S dpkg || [ $? &minus;eq 1 ] <br>
+will limit the update rule to packages from the specified
+source packages.</p>
+
+<p style="margin-left:11%;"><b>DownloadListsAs</b></p>
+
+<p style="margin-left:22%;">The arguments of this field
+specify which index files reprepro will download.</p>
+
+<p style="margin-left:22%; margin-top: 1em">Allowed values
+are <b>.</b>, <b>.gz</b>, <b>.bz2</b>, <b>.lzma</b>,
+<b>.xz</b>, <b>.lz</b>, <b>.diff</b>, <b>force.gz</b>,
+<b>force.bz2</b>, <b>force.lzma</b>, <b>force.xz</b>,
+<b>force.lz</b>, and <b>force.diff</b>.</p>
+
+<p style="margin-left:22%; margin-top: 1em">Reprepro will
+try the first supported variant in the list given: Only
+compressions compiled in or for which an uncompressor was
+found are used. Unless the value starts with <b>force.</b>,
+it is only tried if if is found in the Release or InRelease
+file.</p>
+
+<p style="margin-left:22%; margin-top: 1em">The default
+value is <b>.diff .xz .lzma .bz2 .gz .</b>, i.e. download
+Packages.diff if listed in the Release file, otherwise or if
+not usable download .xz if listed in the Release file and
+there is a way to uncompress it, then .lzma if usable, then
+.bz2 if usable, then .gz and then uncompressed).</p>
+
+<p style="margin-left:22%; margin-top: 1em">Note there is
+no way to see if an uncompressed variant of the file is
+available (as the Release file always lists their checksums,
+even if not there), so putting &rsquo;<b>.</b>&rsquo;
+anywhere but as the last argument can mean trying to
+download a file that does not exist.</p>
+
+<p style="margin-left:22%; margin-top: 1em">Together with
+<b>IgnoreRelease</b> reprepro will download the first in
+this list that could be unpacked (i.e. <b>force</b> is
+always assumed) and the default value is <b>.gz .bzip2 .
+.lzma .xz</b>.</p>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>conf/pulls</b>
+<br>
+This file contains the rules for pulling packages from one
+distribution to another. While this can also be done with
+update rules using the file or copy method and using the
+exported indices of that other distribution, this way is
+faster. It also ensures the current files are used and no
+copies are made. (This also leads to the limitation that
+pulling from one component to another is not possible.)</p>
+
+<p style="margin-left:11%; margin-top: 1em">Each rule
+consists out of the following fields:</p>
+
+<table width="100%" border="0" rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="6%">
+
+
+<p><b>Name</b></p></td>
+<td width="5%"></td>
+<td width="78%">
+
+
+<p>The name of this pull rule as it can be used in the
+<b>Pull</b> field in conf/distributions.</p></td></tr>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="6%">
+
+
+<p><b>From</b></p></td>
+<td width="5%"></td>
+<td width="78%">
+
+
+<p>The codename of the distribution to pull packages
+from.</p> </td></tr>
+</table>
+
+<p style="margin-left:11%;"><b>Components</b></p>
+
+<p style="margin-left:22%;">The components of the
+distribution to get from.</p>
+
+<p style="margin-left:22%; margin-top: 1em">If this field
+is not there, all components from the distribution to update
+are tried.</p>
+
+<p style="margin-left:22%; margin-top: 1em">A rule might
+list components not available in all distributions using
+this rule. In this case unknown components are silently
+ignored. (Unless you start reprepro with the
+&minus;&minus;fast option, it will warn about components
+unusable in all distributions using that rule. As exception,
+unusable components called <b>none</b> are never warned
+about, for compatibility with versions prior to 3.0.0 where
+and empty field had a different meaning.)</p>
+
+<p style="margin-left:11%;"><b>Architectures</b></p>
+
+<p style="margin-left:22%;">The architectures to update. If
+omitted all from the distribution to pull from. As in
+<b>conf/updates</b>, you can use &quot;&gt;&quot; to
+download from one architecture and add into another one.
+(And again, only useful with filtering to avoid packages not
+architecture <b>all</b> to migrate).</p>
+
+<p style="margin-left:11%;"><b>UDebComponents</b></p>
+
+<p style="margin-left:22%;">Like <b>Components</b> but for
+the udebs.</p>
+
+<p style="margin-left:11%;"><b>FilterFormula <br>
+FilterList <br>
+FilterSrcList</b></p>
+
+<p style="margin-left:22%;">The same as with update
+rules.</p>
+
+<h2>OVERRIDE FILES
+<a name="OVERRIDE FILES"></a>
+</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">The format of
+override files used by reprepro should resemble the extended
+ftp&minus;archive format, to be specific it is:</p>
+
+<p style="margin-left:11%; margin-top: 1em"><i>packagename
+field name new value</i></p>
+
+<p style="margin-left:11%; margin-top: 1em">For example:
+<b><br>
+kernel&minus;image&minus;2.4.31&minus;yourorga Section
+protected/base <br>
+kernel&minus;image&minus;2.4.31&minus;yourorga Priority
+standard <br>
+kernel&minus;image&minus;2.4.31&minus;yourorga Maintainer
+That&rsquo;s me &lt;me@localhost&gt; <br>
+reprepro Priority required</b></p>
+
+<p style="margin-left:11%; margin-top: 1em">All fields of a
+given package will be replaced by the new value specified in
+the override file with the exception of special fields
+starting with a dollar sign ($). While the field name is
+compared case-insensitive, it is copied in exactly the form
+in the override file there. (Thus I suggest to keep to the
+exact case it is normally found in index files in case some
+other tool confuses them.) More than copied is the Section
+header (unless <b>&minus;S</b> is supplied), which is also
+used to guess the component (unless <b>&minus;C</b> is
+there).</p>
+
+<p style="margin-left:11%; margin-top: 1em">Some values
+like <b>Package</b>, <b>Filename</b>, <b>Size</b> or
+<b>MD5sum</b> are forbidden, as their usage would severly
+confuse reprepro.</p>
+
+<p style="margin-left:11%; margin-top: 1em">As an extension
+reprepro also supports patterns instead of packagenames. If
+the package name contains &rsquo;*&rsquo;, &rsquo;[&rsquo;
+or &rsquo;?&rsquo;, it is considered a pattern and applied
+to each package that is not matched by any non-pattern
+override nor by any previous pattern.</p>
+
+<p style="margin-left:11%; margin-top: 1em">Fieldnames
+starting with a dollar ($) are not be placed in the exported
+control data but have special meaning. Unknown ones are
+loudly ignored. Special fields are:</p>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>$Component</b>:
+includedeb, includedsc, include and processincoming will put
+the package in the component given as value (unless itself
+overridden with <b>&minus;C</b>). Note that the proper way
+to specify the component is by setting the section field and
+using this extension will most likely confuse people and/or
+tools.</p>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>$Delete</b>:
+the value is treated a fieldname and fields of that name are
+removed. (This way one can remove fields previously added
+without removing and readding the package. And fields
+already included in the package can be removed, too).</p>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>conf/incoming</b>
+<br>
+Every chunk is a rule set for the <b>process_incoming</b>
+command. Possible fields are:</p>
+
+<table width="100%" border="0" rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="6%">
+
+
+<p><b>Name</b></p></td>
+<td width="5%"></td>
+<td width="78%">
+
+
+<p>The name of the rule-set, used as argument to the scan
+command to specify to use this rule.</p></td></tr>
+</table>
+
+<p style="margin-left:11%;"><b>IncomingDir</b></p>
+
+<p style="margin-left:22%;">The Name of the directory to
+scan for <b>.changes</b> files.</p>
+
+<p style="margin-left:11%;"><b>TempDir</b></p>
+
+<p style="margin-left:22%;">A directory where the files
+listed in the processed .changes files are copied into
+before they are read. You can avoid some copy operatations
+by placing this directory within the same moint point the
+pool hierarchy is (at least partially) in.</p>
+
+<table width="100%" border="0" rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="9%">
+
+
+<p><b>LogDir</b></p></td>
+<td width="2%"></td>
+<td width="78%">
+
+
+<p>A directory where .changes files, .log files and
+otherwise unused .byhand files are stored upon
+procession.</p> </td></tr>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="9%">
+
+
+<p><b>Allow</b></p></td>
+<td width="2%"></td>
+<td width="78%">
+
+
+<p>Each argument is either a pair
+<i>name1</i><b>&gt;</b><i>name2</i> or simply <i>name</i>
+which is short for <i>name</i><b>&gt;</b><i>name</i>. Each
+<i>name2</i> must identify a distribution, either by being
+Codename, a unique Suite, or a unique AlsoAcceptFor from
+<b>conf/distributions</b>. Each upload has each item in its
+<b>Distribution:</b> header compared first to last with each
+<i>name1</i> in the rules and is put in the first one
+accepting this package. e.g.:</p></td></tr>
+</table>
+
+<p style="margin-left:22%;">Allow: local unstable&gt;sid
+<br>
+or <br>
+Allow: stable&gt;security&minus;updates
+stable&gt;proposed&minus;updates <br>
+(Note that this makes only sense if Multiple is set to true
+or if there are people only allowed to upload to
+proposed&minus;updates but not to
+security&minus;updates).</p>
+
+<p style="margin-left:11%;"><b>Default</b>
+<i>distribution</i></p>
+
+<p style="margin-left:22%;">Every upload not put into any
+other distribution because of an Allow argument is put into
+<i>distribution</i> if that accepts it.</p>
+
+<p style="margin-left:11%;"><b>Multiple</b></p>
+
+<p style="margin-left:22%;">Old form of Options:
+multiple_distributions.</p>
+
+<p style="margin-left:11%;"><b>Options</b></p>
+
+<p style="margin-left:22%;">A list of options <b><br>
+multiple_distributions</b> <br>
+Allow including a upload in multiple distributions.</p>
+
+<p style="margin-left:22%; margin-top: 1em">If a .changes
+file lists multiple distributions, then reprepro will start
+with the first name given, check all Accept and Default
+options till it finds a distribution this upload can go
+into.</p>
+
+<p style="margin-left:22%; margin-top: 1em">If this found
+no distribution or if this option was given, reprepro will
+then do the same with the second distribution name given in
+the .changes file and so on. <b><br>
+limit_arch_all</b> <br>
+If an upload contains binaries from some architecture and
+architecture all packages, the architecture all packages are
+only put into the architectures within this upload. Useful
+to combine with the <b>flood</b> command.</p>
+
+<table width="100%" border="0" rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="9%">
+
+
+<p><b>Permit</b></p></td>
+<td width="2%"></td>
+<td width="78%">
+
+
+<p>A list of options to allow things otherwise causing
+errors:</p> </td></tr>
+</table>
+
+<p style="margin-left:22%;"><b>unused_files</b> <br>
+Do not stop with error if there are files listed in the
+<b>.changes</b> file if it lists files not belonging to any
+package in it. <b><br>
+older_version</b> <br>
+Ignore a package not added because there already is a
+strictly newer version available instead of treating this as
+an error.</p>
+
+<p style="margin-left:11%;"><b>Cleanup</b>
+<i>options</i></p>
+
+<p style="margin-left:22%;">A list of options to cause more
+files in the incoming directory to be deleted: <b><br>
+unused_files</b> <br>
+If there is <b>unused_files</b> in <b>Permit</b> then also
+delete those files when the package is deleted after
+successful processing. <b><br>
+on_deny</b> <br>
+If a <b>.changes</b> file is denied processing because of
+missing signatures or allowed distributions to be put in,
+delete it and all the files it references. <b><br>
+on_error</b> <br>
+If a <b>.changes</b> file causes errors while processing,
+delete it and the files it references.</p>
+
+<p style="margin-left:22%; margin-top: 1em">Note that
+allowing cleanup in publically accessible incoming queues
+allows a denial of service by sending in .changes files
+deleting other peoples files before they are completed.
+Especially when .changes files are handled directly (e.g. by
+inoticoming).</p>
+
+<p style="margin-left:11%;"><b>MorgueDir</b></p>
+
+<p style="margin-left:22%;">If files are to be deleted by
+Cleanup, they are instead moved to a subdirectory of the
+directory given as value to this field. This directory has
+to be on the same partition as the incoming directory and
+files are moved (i.e. owner and permission stay the same)
+and never copied.</p>
+
+<h2>UPLOADERS FILES
+<a name="UPLOADERS FILES"></a>
+</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">These files
+specified by the <b>Uploaders</b> header in the distribution
+definition as explained above describe what key a
+<b>.changes</b> file as to be signed with to be included in
+that distribution.</p>
+
+<p style="margin-left:11%; margin-top: 1em">Empty lines and
+lines starting with a hash are ignored, every other line
+must be of one of the following nine forms or an include
+directive: <b><br>
+allow</b> <i>condition</i> <b>by anybody</b></p>
+
+<p style="margin-left:22%;">which allows everyone to upload
+packages matching <i>condition</i>,</p>
+
+<p style="margin-left:11%;"><b>allow</b> <i>condition</i>
+<b>by unsigned</b></p>
+
+<p style="margin-left:22%;">which allows everything
+matching that has no pgp/gpg header,</p>
+
+<p style="margin-left:11%;"><b>allow</b> <i>condition</i>
+<b>by any key</b></p>
+
+<p style="margin-left:22%;">which allows everything
+matching with any valid signature in or</p>
+
+<p style="margin-left:11%;"><b>allow</b> <i>condition</i>
+<b>by key</b> <i>key-id</i></p>
+
+<p style="margin-left:22%;">which allows everything
+matching signed by this <i>key-id</i> (to be specified
+without any spaces). If the <i>key-id</i> ends with a
+<b>+</b> (plus), a signature with a subkey of this primary
+key also suffices.</p>
+
+<p style="margin-left:22%; margin-top: 1em"><i>key-id</i>
+must be a suffix of the id libgpgme uses to identify this
+key, i.e. a number of hexdigits from the end of the
+fingerprint of the key, but no more than what libgpgme uses.
+(The maximal number should be what gpg
+&minus;&minus;list-key &minus;&minus;with&minus;colons
+prints, as of the time of this writing that is at most 16
+hex-digits).</p>
+
+<p style="margin-left:11%;"><b>allow</b> <i>condition</i>
+<b>by group</b> <i>groupname</i></p>
+
+<p style="margin-left:22%;">which allows every member of
+group <i>groupname</i>. Groups can be manipulated by</p>
+
+<p style="margin-left:11%;"><b>group</b> <i>groupname</i>
+<b>add</b> <i>key-id</i></p>
+
+<p style="margin-left:22%;">to add a <i>key-id</i> (see
+above for details) to this group, or</p>
+
+<p style="margin-left:11%;"><b>group</b> <i>groupname</i>
+<b>contains</b> <i>groupname</i></p>
+
+<p style="margin-left:22%;">to add a whole group to a
+group.</p>
+
+<p style="margin-left:22%; margin-top: 1em">To avoid
+warnings in incomplete config files there is also</p>
+
+<p style="margin-left:11%;"><b>group</b> <i>groupname</i>
+<b>empty</b></p>
+
+<p style="margin-left:22%;">to declare a group has no
+members (avoids warnings that it is used without those)
+and</p>
+
+<p style="margin-left:11%;"><b>group</b> <i>groupname</i>
+<b>unused</b></p>
+
+<p style="margin-left:22%;">to declare that a group is not
+yet used (avoid warnings that it is not used).</p>
+
+<p style="margin-left:11%; margin-top: 1em">A line starting
+with <b>include</b> causes the rest of the line to be
+interpreted as filename, which is opened and processed
+before the rest of the file is processed.</p>
+
+<p style="margin-left:11%; margin-top: 1em">The only
+conditions currently supported are:</p>
+
+<table width="100%" border="0" rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="1%">
+
+
+<p><b>*</b></p></td>
+<td width="10%"></td>
+<td width="36%">
+
+
+<p>which means any package,</p></td>
+<td width="42%">
+</td></tr>
+</table>
+
+<p style="margin-left:11%;"><b>source
+&rsquo;</b><i>name</i><b>&rsquo;</b></p>
+
+<p style="margin-left:22%;">which means any package with
+source <i>name</i>. (&rsquo;<b>*</b>&rsquo;,
+&rsquo;<b>?</b>&rsquo; and &rsquo;<b>[</b>..<b>]</b>&rsquo;
+are treated as in shell wildcards).</p>
+
+<p style="margin-left:11%;"><b>sections
+&rsquo;</b><i>name</i><b>&rsquo;</b>(<b>|&rsquo;</b><i>name</i><b>&rsquo;</b>)*</p>
+
+<p style="margin-left:22%;">matches an upload in which each
+section matches one of the names given. As upload conditions
+are checked very early, this is the section listed in the
+.changes file, not the one from the override file. (But this
+might change in the future, if you have the need for the one
+or the other behavior, let me know).</p>
+
+<p style="margin-left:11%;"><b>sections contain
+&rsquo;</b><i>name</i><b>&rsquo;</b>(<b>|&rsquo;</b><i>name</i><b>&rsquo;</b>)*</p>
+
+<p style="margin-left:22%;">The same, but not all sections
+must be from the given set, but at least one source or
+binary package needs to have one of those given.</p>
+
+<p style="margin-left:11%;"><b>binaries
+&rsquo;</b><i>name</i><b>&rsquo;</b>(<b>|&rsquo;</b><i>name</i><b>&rsquo;</b>)*</p>
+
+<p style="margin-left:22%;">matches an upload in which each
+binary (type deb or udeb) matches one of the names
+given.</p>
+
+<p style="margin-left:11%;"><b>binaries contain
+&rsquo;</b><i>name</i><b>&rsquo;</b>(<b>|&rsquo;</b><i>name</i><b>&rsquo;</b>)*</p>
+
+<p style="margin-left:22%;">again only at least one instead
+of all is required.</p>
+
+<p style="margin-left:11%;"><b>architectures
+&rsquo;</b><i>architecture</i><b>&rsquo;</b>(<b>|&rsquo;</b><i>name</i><b>&rsquo;</b>)*</p>
+
+<p style="margin-left:22%;">matches an upload in which each
+package has only architectures from the given set.
+<b>source</b> and <b>all</b> are treated as unique
+architectures. Wildcards are not allowed.</p>
+
+<p style="margin-left:11%;"><b>architectures contain
+&rsquo;</b><i>architecture</i><b>&rsquo;</b>(<b>|&rsquo;</b><i>architecture</i><b>&rsquo;</b>)*</p>
+
+<p style="margin-left:22%;">again only at least one instead
+of all is required.</p>
+
+<table width="100%" border="0" rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="9%">
+
+
+<p><b>byhand</b></p></td>
+<td width="2%"></td>
+<td width="78%">
+
+
+<p>matches an upload with at least one byhand file (i.e. a
+file with section <b>byhand</b> or
+<b>raw&minus;</b><i>something</i>).</p> </td></tr>
+</table>
+
+<p style="margin-left:11%;"><b>byhand
+&rsquo;</b><i>section</i><b>&rsquo;</b>(<b>|&rsquo;</b><i>section</i><b>&rsquo;</b>)*</p>
+
+<p style="margin-left:22%;">matches an upload with at least
+one byhand file and all byhand files having a section listed
+in the list of given section. (i.e. <b>byhand
+&rsquo;byhand&rsquo;|&rsquo;raw&minus;*&rsquo;</b> is
+currently is the same as <b>byhand</b>).</p>
+
+<p style="margin-left:11%;"><b>distribution
+&rsquo;</b><i>codename</i><b>&rsquo;</b></p>
+
+<p style="margin-left:22%;">which means any package when it
+is to be included in <i>codename</i>. As the uploaders file
+is given by distribution, this is only useful to reuse a
+complex uploaders file for multiple distributions.</p>
+
+<p style="margin-left:11%; margin-top: 1em">Putting
+<b>not</b> in front of a condition, inverses it&rsquo;s
+meaning. For example <b><br>
+allow not source &rsquo;r*&rsquo; by anybody</b> <br>
+means anybody may upload packages which source name does not
+start with an &rsquo;r&rsquo;.</p>
+
+<p style="margin-left:11%; margin-top: 1em">Multiple
+conditions can be connected with <b>and</b> and <b>or</b>,
+with <b>or</b> binding stronger (but both weaker than
+<b>not</b>). That means <b><br>
+allow source &rsquo;r*&rsquo; and source &rsquo;*xxx&rsquo;
+or source &rsquo;*o&rsquo; by anybody</b> <br>
+is equivalent to <b><br>
+allow source &rsquo;r*xxx&rsquo; by anybody <br>
+allow source &rsquo;r*o&rsquo; by anybody</b></p>
+
+<p style="margin-left:11%; margin-top: 1em">(Other
+conditions will follow once somebody tells me what
+restrictions are useful. Currently planned is only something
+for architectures).</p>
+
+<h2>ERROR IGNORING
+<a name="ERROR IGNORING"></a>
+</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">With
+<b>&minus;&minus;ignore</b> on the command line or an
+<i>ignore</i> line in the options file, the following type
+of errors can be ignored: <b><br>
+brokenold</b> (hopefully never seen)</p>
+
+<p style="margin-left:22%;">If there are errors parsing an
+installed version of package, do not error out, but assume
+it is older than anything else, has not files or no source
+name.</p>
+
+<p style="margin-left:11%;"><b>brokensignatures</b></p>
+
+<p style="margin-left:22%;">If a .changes or .dsc file
+contains at least one invalid signature and no valid
+signature (not even expired or from an expired or revoked
+key), reprepro assumes the file got corrupted and refuses to
+use it unless this ignore directive is given.</p>
+
+<p style="margin-left:11%;"><b>brokenversioncmp</b>
+(hopefully never seen)</p>
+
+<p style="margin-left:22%;">If comparing old and new
+version fails, assume the new one is newer.</p>
+
+<p style="margin-left:11%;"><b>dscinbinnmu</b></p>
+
+<p style="margin-left:22%;">If a .changes file has an
+explicit Source version that is different the to the version
+header of the file, than reprepro assumes it is binary non
+maintainer upload (NMU). In that case, source files are not
+permitted in .changes files processed by <b>include</b> or
+<b>processincoming</b>. Adding
+<b>&minus;&minus;ignore=dscinbinnmu</b> allows it for the
+<b>include</b> command.</p>
+
+<p style="margin-left:11%;"><b>emptyfilenamepart</b>
+(insecure)</p>
+
+<p style="margin-left:22%;">Allow strings to be empty that
+are used to construct filenames. (like versions,
+architectures, ...)</p>
+
+<p style="margin-left:11%;"><b>extension</b></p>
+
+<p style="margin-left:22%;">Allow to <b>includedeb</b>
+files that do not end with <b>.deb</b>, to <b>includedsc</b>
+files not ending in <b>.dsc</b> and to <b>include</b> files
+not ending in <b>.changes</b>.</p>
+
+<p style="margin-left:11%;"><b>forbiddenchar</b>
+(insecure)</p>
+
+<p style="margin-left:22%;">Do not insist on Debian policy
+for package and source names and versions. Thus allowing all
+7-bit characters but slashes (as they would break the file
+storage) and things syntactically active (spaces,
+underscores in filenames in .changes files, opening
+parentheses in source names of binary packages). To allow
+some 8-bit chars additionally, use <b>8bit</b>
+additionally.</p>
+
+<p style="margin-left:11%;"><b>8bit</b> (more insecure)</p>
+
+<p style="margin-left:22%;">Allow 8-bit characters not
+looking like overlong UTF-8 sequences in filenames and
+things used as parts of filenames. Though it hopefully
+rejects overlong UTF-8 sequences, there might be other
+characters your filesystem confuses with special characters,
+thus creating filenames possibly equivalent to
+<b>/mirror/pool/main/../../../etc/shadow</b> (Which should
+be safe, as you do not run reprepro as root, do you?) or
+simply overwriting your conf/distributions file adding some
+commands in there. So do not use this if you are paranoid,
+unless you are paranoid enough to have checked the code of
+your libs, kernel and filesystems.</p>
+
+<p style="margin-left:11%;"><b>ignore</b> (for forward
+compatibility)</p>
+
+<p style="margin-left:22%;">Ignore unknown ignore types
+given to <i>&minus;&minus;ignore</i>.</p>
+
+<p style="margin-left:11%;"><b>flatandnonflat</b> (only
+supresses a warning)</p>
+
+<p style="margin-left:22%;">Do not warn about a flat and a
+non-flat distribution from the same source with the same
+name when updating. (Hopefully never ever needed.)</p>
+
+<p style="margin-left:11%;"><b>malformedchunk</b> (I hope
+you know what you do)</p>
+
+<p style="margin-left:22%;">Do not stop when finding a line
+not starting with a space but no colon(:) in it. These are
+otherwise rejected as they have no defined meaning.</p>
+
+<p style="margin-left:11%;"><b>missingfield</b> (safe to
+ignore)</p>
+
+<p style="margin-left:22%;">Ignore missing fields in a
+.changes file that are only checked but not processed. Those
+include: Format, Date, Urgency, Maintainer, Description,
+Changes</p>
+
+<p style="margin-left:11%;"><b>missingfile</b> (might be
+insecure)</p>
+
+<p style="margin-left:22%;">When including a .dsc file from
+a .changes file, try to get files needed but not listed in
+the .changes file (e.g. when someone forgot to specify
+&minus;sa to dpkg&minus;buildpackage) from the directory the
+.changes file is in instead of erroring out.
+(<b>&minus;&minus;delete</b> will not work with those files,
+though.)</p>
+
+<p style="margin-left:11%;"><b>spaceonlyline</b> (I hope
+you know what you do)</p>
+
+<p style="margin-left:22%;">Allow lines containing only
+(but non-zero) spaces. As these do not separate chunks as
+thus will cause reprepro to behave unexpected, they cause
+error messages by default.</p>
+
+<p style="margin-left:11%;"><b>surprisingarch</b></p>
+
+<p style="margin-left:22%;">Do not reject a .changes file
+containing files for a architecture not listed in the
+Architecture-header within it.</p>
+
+<p style="margin-left:11%;"><b>surprisingbinary</b></p>
+
+<p style="margin-left:22%;">Do not reject a .changes file
+containing .deb files containing packages whose name is not
+listed in the &quot;Binary:&quot; header of that changes
+file.</p>
+
+<p style="margin-left:11%;"><b>undefinedtarget</b> (hope
+you are not using the wrong db directory)</p>
+
+<p style="margin-left:22%;">Do not stop when the
+packages.db file contains databases for
+codename/packagetype/component/architectures combinations
+that are not listed in your distributions file.</p>
+
+<p style="margin-left:22%; margin-top: 1em">This allows you
+to temporarily remove some distribution from the config
+files, without having to remove the packages in it with the
+<b>clearvanished</b> command. You might even temporarily
+remove single architectures or components, though that might
+cause inconsistencies in some situations.</p>
+
+<p style="margin-left:11%;"><b>undefinedtracking</b> (hope
+you are not using the wrong db directory)</p>
+
+<p style="margin-left:22%;">Do not stop when the tracking
+file contains databases for distributions that are not
+listed in your <b>distributions</b> file.</p>
+
+<p style="margin-left:22%; margin-top: 1em">This allows you
+to temporarily remove some distribution from the config
+files, without having to remove the packages in it with the
+<b>clearvanished</b> command. You might even temporarily
+disable tracking in some distribution, but that is likely to
+cause inconsistencies in there, if you do not know, what you
+are doing.</p>
+
+<p style="margin-left:11%;"><b>unknownfield</b> (for
+forward compatibility)</p>
+
+<p style="margin-left:22%;">Ignore unknown fields in the
+config files, instead of refusing to run then.</p>
+
+<p style="margin-left:11%;"><b>unusedarch</b> (safe to
+ignore)</p>
+
+<p style="margin-left:22%;">No longer reject a .changes
+file containing no files for any of the architectures listed
+in the Architecture-header within it.</p>
+
+<p style="margin-left:11%;"><b>unusedoption</b></p>
+
+<p style="margin-left:22%;">Do not complain about command
+line options not used by the specified action (like
+<b>&minus;&minus;architecture</b>).</p>
+
+<p style="margin-left:11%;"><b>uploaders</b></p>
+
+<p style="margin-left:22%;">The include command will accept
+packages that would otherwise been rejected by the uploaders
+file.</p>
+
+<p style="margin-left:11%;"><b>wrongarchitecture</b> (safe
+to ignore)</p>
+
+<p style="margin-left:22%;">Do not warn about wrong
+&quot;Architecture:&quot; lines in downloaded Packages
+files. (Note that wrong Architectures are always ignored
+when getting stuff from flat repostories or importing stuff
+from one architecture to another).</p>
+
+<p style="margin-left:11%;"><b>wrongdistribution</b> (safe
+to ignore)</p>
+
+<p style="margin-left:22%;">Do not error out if a .changes
+file is to be placed in a distribution not listed in that
+files&rsquo; Distributions: header.</p>
+
+<p style="margin-left:11%;"><b>wrongsourceversion</b></p>
+
+<p style="margin-left:22%;">Do not reject a .changes file
+containing .deb files with a different opinion on what the
+version of the source package is. <br>
+(Note: reprepro only compares literally here, not by
+meaning.)</p>
+
+<p style="margin-left:11%;"><b>wrongversion</b></p>
+
+<p style="margin-left:22%;">Do not reject a .changes file
+containing .dsc files with a different version. <br>
+(Note: reprepro only compares literally here, not by
+meaning.)</p>
+
+<p style="margin-left:11%;"><b>expiredkey</b> (I hope you
+know what you do)</p>
+
+<p style="margin-left:22%;">Accept signatures with expired
+keys. (Only if the expired key is explicitly requested).</p>
+
+<p style="margin-left:11%;"><b>expiredsignature</b> (I hope
+you know what you do)</p>
+
+<p style="margin-left:22%;">Accept expired signatures with
+expired keys. (Only if the key is explicitly requested).</p>
+
+<p style="margin-left:11%;"><b>revokedkey</b> (I hope you
+know what you do)</p>
+
+<p style="margin-left:22%;">Accept signatures with revoked
+keys. (Only if the revoked key is explicitly requested).</p>
+
+<h2>GUESSING
+<a name="GUESSING"></a>
+</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">When including
+a binary or source package without explicitly declaring a
+component with <b>&minus;C</b> it will take the first
+component with the name of the section, being prefix to the
+section, being suffix to the section or having the section
+as prefix or any. (In this order)</p>
+
+<p style="margin-left:11%; margin-top: 1em">Thus having
+specified the components: &quot;main non&minus;free contrib
+non&minus;US/main non&minus;US/non&minus;free
+non&minus;US/contrib&quot; should map e.g.
+&quot;non&minus;US&quot; to &quot;non&minus;US/main&quot;
+and &quot;contrib/editors&quot; to &quot;contrib&quot;,
+while having only &quot;main non&minus;free and
+contrib&quot; as components should map
+&quot;non&minus;US/contrib&quot; to &quot;contrib&quot; and
+&quot;non&minus;US&quot; to &quot;main&quot;.</p>
+
+<p style="margin-left:11%; margin-top: 1em"><b>NOTE:</b>
+Always specify main as the first component, if you want
+things to end up there.</p>
+
+<p style="margin-left:11%; margin-top: 1em"><b>NOTE:</b>
+unlike in dak, non&minus;US and non&minus;us are different
+things...</p>
+
+<h2>NOMENCLATURE
+<a name="NOMENCLATURE"></a>
+</h2>
+
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>Codename</b>
+the primary identifier of a given distribution. This are
+normally things like <b>sarge</b>, <b>etch</b> or
+<b>sid</b>. <b><br>
+basename</b></p>
+
+<p style="margin-left:22%;">the name of a file without any
+directory information.</p>
+
+<table width="100%" border="0" rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="9%">
+
+
+<p><b>byhand</b></p></td>
+<td width="2%"></td>
+<td width="78%">
+
+
+<p>Changes files can have files with section
+&rsquo;byhand&rsquo; (Debian) or &rsquo;raw&minus;&rsquo;
+(Ubuntu). Those files are not packages but other data
+generated (usually together with packages) and then uploaded
+together with this changes files.</p></td></tr>
+</table>
+
+<p style="margin-left:22%; margin-top: 1em">With reprepro
+those can be stored in the pool next to their packages whith
+tracking, put in some log directory when using
+processincoming, or given to an hook script (currently only
+possible with processincoming).</p>
+
+<p style="margin-left:11%;"><b>filekey</b></p>
+
+<p style="margin-left:22%;">the position relative to the
+outdir. (as found in &quot;Filename:&quot; in
+Packages.gz)</p>
+
+<p style="margin-left:11%;"><b>full filename</b></p>
+
+<p style="margin-left:22%;">the position relative to /</p>
+
+<p style="margin-left:11%;"><b>architecture</b></p>
+
+<p style="margin-left:22%;">The term like <b>sparc</b>,
+<b>i386</b>, <b>mips</b>, ... . To refer to the source
+packages, <b>source</b> is sometimes also treated as
+architecture.</p>
+
+<p style="margin-left:11%;"><b>component</b></p>
+
+<p style="margin-left:22%;">Things like <b>main</b>,
+<b>non&minus;free</b> and <b>contrib</b> (by policy and some
+other programs also called section, reprepro follows the
+naming scheme of apt here.)</p>
+
+<p style="margin-left:11%;"><b>section</b></p>
+
+<p style="margin-left:22%;">Things like <b>base</b>,
+<b>interpreters</b>, <b>oldlibs</b> and
+<b>non&minus;free/math</b> (by policy and some other
+programs also called subsections).</p>
+
+<table width="100%" border="0" rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="9%">
+
+
+<p><b>md5sum</b></p></td>
+<td width="2%"></td>
+<td width="78%">
+
+
+<p>The checksum of a file in the format &quot;<i>&lt;md5sum
+of file&gt; &lt;length of file&gt;</i>&quot;</p></td></tr>
+</table>
+
+<h2>Some note on updates
+<a name="Some note on updates"></a>
+</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>A version is
+not overwritten with the same version. <br>
+reprepro</b> will never update a package with a version it
+already has. This would be equivalent to rebuilding the
+whole database with every single upgrade. To force the new
+same version in, remove it and then update. (If files of the
+packages changed without changing their name, make sure the
+file is no longer remembered by reprepro. Without
+<b>&minus;&minus;keepunreferencedfiled</b> and without
+errors while deleting it should already be forgotten,
+otherwise a <b>deleteunreferenced</b> or even some
+<b>__forget</b> might help.)</p>
+
+<p style="margin-left:11%; margin-top: 1em"><b>The magic
+delete rule (&quot;&minus;&quot;).</b> <br>
+A minus as a single word in the <b>Update:</b> line of a
+distribution marks everything to be deleted. The mark causes
+later rules to get packages even if they have (strict) lower
+versions. The mark will get removed if a later rule sets the
+package on hold (hold is not yet implemented, in case you
+might wonder) or would get a package with the same version
+(Which it will not, see above). If the mark is still there
+at the end of the processing, the package will get
+removed.</p>
+
+<p style="margin-left:11%; margin-top: 1em">Thus the line
+&quot;Update: &minus; <i>rules</i> &quot; will cause all
+packages to be exactly the highest Version found in
+<i>rules.</i> The line &quot;Update: <i>near</i> &minus;
+<i>rules</i> &quot; will do the same, except if it needs to
+download packages, it might download it from <i>near</i>
+except when too confused. (It will get too confused e.g.
+when <i>near</i> or <i>rules</i> have multiple versions of
+the package and the highest in <i>near</i> is not the first
+one in <i>rules,</i> as it never remember more than one
+possible spring for a package.</p>
+
+<p style="margin-left:11%; margin-top: 1em">Warning: This
+rule applies to all type/component/architecture triplets of
+a distribution, not only those some other update rule
+applies to. (That means it will delete everything in
+those!)</p>
+
+<h2>ENVIRONMENT VARIABLES
+<a name="ENVIRONMENT VARIABLES"></a>
+</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">Environment
+variables are always overwritten by command line options,
+but overwrite options set in the <b>options</b> file. (Even
+when the options file is obviously parsed after the
+environment variables as the environment may determine the
+place of the options file). <b><br>
+REPREPRO_BASE_DIR</b></p>
+
+<p style="margin-left:22%;">The directory in this variable
+is used instead of the current directory, if no
+<b>&minus;b</b> or <b>&minus;&minus;basedir</b> options are
+supplied. <br>
+It is also set in all hook scripts called by reprepro
+(relative to the current directory or absolute, depending on
+how reprepro got it).</p>
+
+<p style="margin-left:11%;"><b>REPREPRO_CONFIG_DIR</b></p>
+
+<p style="margin-left:22%;">The directory in this variable
+is used when no <b>&minus;&minus;confdir</b> is supplied.
+<br>
+It is also set in all hook scripts called by reprepro
+(relative to the current directory or absolute, depending on
+how reprepro got it).</p>
+
+<p style="margin-left:11%;"><b>REPREPRO_OUT_DIR</b></p>
+
+<p style="margin-left:22%;">This is not used, but only set
+in hook scripts called by reprepro to the directory in which
+the <b>pool</b> subdirectory resides (relative to the
+current directory or absolute, depending on how reprepro got
+it).</p>
+
+<p style="margin-left:11%;"><b>REPREPRO_DIST_DIR</b></p>
+
+<p style="margin-left:22%;">This is not used, but only set
+in hook scripts called by reprepro to the <b>dists</b>
+directory (relative to the current directory or absolute,
+depending on how reprepro got it).</p>
+
+<p style="margin-left:11%;"><b>REPREPRO_LOG_DIR</b></p>
+
+<p style="margin-left:22%;">This is not used, but only set
+in hook scripts called by reprepro to the value setable by
+<b>&minus;&minus;logdir</b>.</p>
+
+<p style="margin-left:11%;"><b>REPREPRO_CAUSING_COMMAND
+<br>
+REPREPRO_CAUSING_FILE</b></p>
+
+<p style="margin-left:22%;">Those two environment variable
+are set (or unset) in <b>Log:</b> and <b>ByHandHooks:</b>
+scripts and hint what command and what file caused the hook
+to be called (if there is some).</p>
+
+
+<p style="margin-left:11%;"><b>REPREPRO_CAUSING_RULE</b></p>
+
+<p style="margin-left:22%;">This environment variable is
+set (or unset) in <b>Log:</b> scripts and hint what update
+or pull rule caused this change.</p>
+
+<p style="margin-left:11%;"><b>REPREPRO_FROM</b></p>
+
+<p style="margin-left:22%;">This environment variable is
+set (or unset) in <b>Log:</b> scripts and denotes what other
+distribution a package is copied from (with pull and copy
+commands).</p>
+
+
+<p style="margin-left:11%;"><b>REPREPRO_FILTER_ARCHITECTURE
+<br>
+REPREPRO_FILTER_CODENAME <br>
+REPREPRO_FILTER_COMPONENT <br>
+REPREPRO_FILTER_PACKAGETYPE <br>
+REPREPRO_FILTER_PATTERN</b></p>
+
+<p style="margin-left:22%;">Set in <b>FilterList:</b> and
+<b>FilterSrcList:</b> scripts.</p>
+
+<p style="margin-left:11%;"><b>GNUPGHOME</b></p>
+
+<p style="margin-left:22%;">Not used by reprepro directly.
+But reprepro uses libgpgme, which calls gpg for signing and
+verification of signatures. And your gpg will most likely
+use the content of this variable instead of
+&quot;~/.gnupg&quot;. Take a look at <b>gpg</b>(1) to be
+sure. You can also tell reprepro to set this with the
+<b>&minus;&minus;gnupghome</b> option.</p>
+
+<p style="margin-left:11%;"><b>GPG_TTY</b></p>
+
+<p style="margin-left:22%;">When there is a gpg&minus;agent
+running that does not have the passphrase cached yet, gpg
+will most likely try to start some pinentry program to get
+it. If that is pinentry&minus;curses, that is likely to fail
+without this variable, because it cannot find a terminal to
+ask on. In this cases you might set this variable to
+something like the value of <b>$(tty)</b> or <b>$SSH_TTY</b>
+or anything else denoting a usable terminal. (You might also
+want to make sure you actually have a terminal available.
+With ssh you might need the <b>&minus;t</b> option to get a
+terminal even when telling gpg to start a specific
+command).</p>
+
+<p style="margin-left:22%; margin-top: 1em">By default,
+reprepro will set this variable to what the symbolic link
+<b>/proc/self/fd/0</b> points to, if stdin is a terminal,
+unless you told with <b>&minus;&minus;noguessgpgtty</b> to
+not do so.</p>
+
+<h2>BUGS
+<a name="BUGS"></a>
+</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">Increased
+verbosity always shows those things one does not want to
+know. (Though this might be inevitable and a corollary to
+Murphy)</p>
+
+<p style="margin-left:11%; margin-top: 1em">Reprepro uses
+berkeley db, which was a big mistake. The most annoying
+problem not yet worked around is database corruption when
+the disk runs out of space. (Luckily if it happens while
+downloading packages while updating, only the files database
+is affected, which is easy (though time consuming) to
+rebuild, see <b>recovery</b> file in the documentation).
+Ideally put the database on another partition to avoid
+that.</p>
+
+<p style="margin-left:11%; margin-top: 1em">While the
+source part is mostly considered as the architecture
+<b>source</b> some parts may still not use this
+notation.</p>
+
+<h2>WORK-AROUNDS TO COMMON PROBLEMS
+<a name="WORK-AROUNDS TO COMMON PROBLEMS"></a>
+</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>gpgme
+returned an impossible condition</b></p>
+
+<p style="margin-left:22%;">With the woody version this
+normally meant that there was no .gnupg directory in $HOME,
+but it created one and reprepro succeeds when called again
+with the same command. Since sarge the problem sometimes
+shows up, too. But it is no longer reproducible and it does
+not fix itself, neither. Try running <b>gpg
+&minus;&minus;verify</b> <i>file-you-had-problems-with</i>
+manually as the user reprepro is running and with the same
+$HOME. This alone might fix the problem. It should not print
+any messages except perhaps <br>
+gpg: no valid OpenPGP data found. <br>
+gpg: the signature could not be verified. <br>
+if it was an unsigned file.</p>
+
+<p style="margin-left:11%;"><b>not including .orig.tar.gz
+when a .changes file&rsquo;s version does not end <br>
+in &minus;0 or &minus;1</b></p>
+
+<p style="margin-left:22%;">If dpkg&minus;buildpackage is
+run without the <b>&minus;sa</b> option to build a version
+with a Debian revision not being &minus;0 or &minus;1, it
+does not list the <b>.orig.tar.gz</b> file in the
+<b>.changes</b> file. If you want to <b>include</b> such a
+file with reprepro when the .orig.tar.gz file does not
+already exist in the pool, reprepro will report an error.
+This can be worked around by: <br>
+call <b>dpkg&minus;buildpackage</b> with <b>&minus;sa</b>
+(recommended) <br>
+copy the .orig.tar.gz file to the proper place in the pool
+before <br>
+call reprepro with &minus;&minus;ignore=missingfile
+(discouraged)</p>
+
+<p style="margin-left:11%;"><b>leftover files in the pool
+directory.</b></p>
+
+<p style="margin-left:22%;">reprepro is sometimes a bit too
+timid of deleting stuff. When things go wrong and there have
+been errors it sometimes just leaves everything where it is.
+To see what files reprepro remembers to be in your pool
+directory but does not know anything needing them right
+know, you can use <b><br>
+reprepro dumpunreferenced</b> <br>
+To delete them: <b><br>
+reprepro deleteunreferenced</b></p>
+
+<h2>INTERRUPTING
+<a name="INTERRUPTING"></a>
+</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">Interrupting
+reprepro has its problems. Some things (like speaking with
+apt methods, database stuff) can cause problems when
+interrupted at the wrong time. Then there are design
+problems of the code making it hard to distinguish if the
+current state is dangerous or non-dangerous to interrupt.
+Thus if reprepro receives a signal normally sent to tell a
+process to terminate itself softly, it continues its
+operation, but does not start any new operations. (I.e. it
+will not tell the apt&minus;methods any new file to
+download, it will not replace a package in a target, unless
+it already had started with it, it will not delete any files
+gotten dereferenced, and so on).</p>
+
+<p style="margin-left:11%; margin-top: 1em"><b>It only
+catches the first signal of each type. The second signal of
+a given type will terminate reprepro. You will risk database
+corruption and have to remove the lockfile manually.</b></p>
+
+<p style="margin-left:11%; margin-top: 1em">Also note that
+even normal interruption leads to code-paths mostly untested
+and thus expose a multitude of bugs including those leading
+to data corruption. Better think a second more before
+issuing a command than risking the need for
+interruption.</p>
+
+<h2>REPORTING BUGS
+<a name="REPORTING BUGS"></a>
+</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">Report bugs or
+wishlist requests to the Debian BTS <br>
+(e.g. by using <b>reportbug reprepro</b> under Debian) <br>
+or directly to
+<a href="mailto:brlink@debian.org">brlink@debian.org</a></p>
+
+<h2>COPYRIGHT
+<a name="COPYRIGHT"></a>
+</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">Copyright
+&copy; 2004,2005,2006,2007,2008,2009,2010,2011,2012
+<a href="http://www.brlink.eu">Bernhard R. Link</a> <br>
+This is free software; see the source for copying
+conditions. There is NO warranty; not even for
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.</p>
+<hr>
+</body>
+</html>
