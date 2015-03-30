@@ -31,7 +31,27 @@ proc begin_with { line _name } {
 	return 0
 }
 
+#
+# getopt $args "--dir=%s" 
+#
+# getopt $args "-verbose"
+#
+proc getopt { _args _s args } {
 
+	if [regexp {^(\-+\w+)=(\S+)$} $_s _x _name _type] {
+	
+		set j		[lsearch -exact $_args $_name]
+		
+		if { $j < 0 } { return "" }
+		
+		incr j
+		return [lindex $_args $j]
+	
+	} elseif [regexp {^(\-+\w+)$} $_s _x _name] {
+	
+		if { [lsearch -exact $_args $_name] < 0 } { return 0 } else { return 1 }
+	}
+}
 
 
 #

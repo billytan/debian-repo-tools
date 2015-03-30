@@ -1,5 +1,19 @@
 @echo off
 
+call C:\bin\X.bat sugou /baixibao2/baixibao2_repo_root/tests common.tcl
+call C:\bin\X.bat sugou /baixibao2/baixibao2_repo_root/tests common-tests.tcl
+
+call C:\bin\X.bat sugou /baixibao2/baixibao2_repo_root/tests DebianLocalRepository.tcl
+call C:\bin\X.bat sugou /baixibao2/baixibao2_repo_root/tests DebianLocalRepository-tests.tcl
+
+call C:\bin\X.bat sugou /baixibao2/baixibao2_repo_root/tests DebianRemoteRepo.tcl
+call C:\bin\X.bat sugou /baixibao2/baixibao2_repo_root/tests DebianRemoteRepo-tests.tcl
+
+
+REM call C:\bin\X.bat sugou /baixibao2/baixibao2_repo_root/tests G:/kbskit/kbskit-0.4.6/Linux64_kbsmk8.6-cli
+
+exit /B
+
 call C:\bin\X.bat jessie /home/billy/debian-tools DebianRemoteRepo-tests.tcl
 
 call C:\bin\X.bat jessie /home/billy/debian-tools DebianRemoteRepo.tcl

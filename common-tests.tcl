@@ -5,6 +5,12 @@
 source "common.tcl"
 
 
+set retcode		[getopt  { "$REPO_DIR/dists/jessie/main/binary-ppc64/Packages.gz" -verbose } -verbose ]
+
+puts  "retcode = $retcode"
+
+exit 
+
 set _text		"this is the first line\n\n but this is another record \n and one more line\n\n the 3rd record start here"
 
 set count		0
