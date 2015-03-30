@@ -4,13 +4,14 @@
 
 source common.tcl
 
+source DebianRepository.tcl
 source DebianLocalRepository.tcl
 
 set REPO_DIR		"/baixibao2/baixibao_repo_root/debian"
 
 set repo_obj		[DebianLocalRepository new $REPO_DIR ]
 
-if 0 {
+if 1 {
 	$repo_obj load  "$REPO_DIR/dists/jessie/main/binary-ppc64/Packages.gz" -verbose
 
 	set count		0
@@ -23,7 +24,7 @@ if 0 {
 	}
 }
 
-if 1 { 
+if 0 { 
 
 	$repo_obj load  "$REPO_DIR/dists/jessie/main/source/Sources.gz" -verbose
 
