@@ -13,11 +13,13 @@ source DebianRemoteRepository.tcl
 # set repo_obj		[DebianRemoteRepository new "http://192.168.133.126/ppc64/debian" sid --arch ppc64 ]
 
 # set repo_obj		[DebianRemoteRepository new "http://192.168.133.126/baixibao/debian" jessie -source 1 ]
-set repo_obj		[DebianRemoteRepository new "http://192.168.133.88/baixibao/debian" jessie -source 1 ]
+# set repo_obj		[DebianRemoteRepository new "http://192.168.133.88/baixibao/debian" jessie -source 1 ]
 
-if 0 {
+set repo_obj		[DebianRemoteRepository new "http://192.168.1.80/debian" jessie -source 1 ]
 
-	$repo_obj load_packages
+if 1 {
+
+	$repo_obj load_packages -verbose
 
 	set count		0
 
@@ -32,7 +34,7 @@ if 0 {
 	$repo_obj download alien
 }
 
-if 1 {
+if 0 {
 
 	$repo_obj load_source_packages -verbose
 

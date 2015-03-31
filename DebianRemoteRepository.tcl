@@ -139,11 +139,8 @@ oo::class create DebianRemoteRepository {
 	}
 	
 	method load_packages { args } {
-		variable packages
 
-		if !is_updated { my __update }
-		
-		set packages		[list]
+		if !$is_updated { my __update }
 
 		# puts "/usr/bin/apt-cache $apt_config dumpavail"
 		
@@ -163,7 +160,7 @@ oo::class create DebianRemoteRepository {
 		
 		@ foreach _r $result << "\n\n" {
 		
-			lappend packages [my parse_package $_r]
+			my __add_package [my parse_package $_r]
 	
 			incr count
 			
@@ -172,7 +169,7 @@ oo::class create DebianRemoteRepository {
 			#
 			# NOT SURE IF "break" will work ... IT WORKS WELL !!!
 			#
-			if { $count > 1000 } break
+			# if { $count > 1000 } break
 		}
 		
 		if [getopt $args "-verbose"]  { puts "$count packages loaded." }
@@ -182,7 +179,6 @@ oo::class create DebianRemoteRepository {
 	# no way to ask apt-cache to present a list of source packages .... so we choose to load from the cache !
 	#
 	method load_source_packages { args } {
-		variable		sources
 		
 		if !$is_updated { my __update }
 
@@ -195,12 +191,7 @@ oo::class create DebianRemoteRepository {
 				#
 				# there may exists multiple versions of a particular source package
 				#
-				
-				#
-				# untolerably slow as we are dealting with 20197 packages ...!!!
-				#
-				# my __add_source_package [my parse_package $_]
-				lappend sources [my parse_package $_]
+				my __add_source_package [my parse_package $_]
 				
 				incr count
 				if [getopt $args "-verbose"] { show_progress "loading %6d" $count }

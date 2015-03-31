@@ -12,24 +12,24 @@ oo::class create DebianLocalRepository {
 	variable repo_dir
 	
 	constructor { _dir args } {
+		variable	suite
+		
+		#
+		# invoke base class constructor
+		#
+		next
 		
 		set repo_dir		$_dir
-		set suite			"jessie"
 
-		set packages		[list]
+		set _s		[getopt $args "-suite=%s"]
+		if { $_s != "" } { set suite $_s }
 	}
 
 	#
 	# provided with Sources.gz or Packages.gz
 	#
 	method load { pathname args } {
-	
-		#
-		# MUST-HAVE: for reference to the data of superclass
-		#
-		variable  sources
-		variable  packages
-		
+			
 		if { [string first "Sources" $pathname] >= 0 } { set is_source  1 } else { set is_source 0 }
 		
 		set _chan		[my open_zipped_file $pathname]
@@ -52,8 +52,8 @@ oo::class create DebianLocalRepository {
 			# invole parse_package OR parse_source_package
 			#
 			set result			[my parse_package $_r ]
-			
-			if $is_source { lappend sources $result } else { lappend packages $result }
+
+			if $is_source { my __add_source_package $result } else { my __add_package $result }	
 
 			incr count
 			
@@ -62,7 +62,7 @@ oo::class create DebianLocalRepository {
 			#
 			# FOR DEBUG PURPOSE
 			#
-			if { $count > 1000 } break
+			# if { $count > 1000 } break
 		}
 
 		return $count

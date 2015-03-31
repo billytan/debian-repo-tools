@@ -4,6 +4,13 @@
 
 source "common.tcl"
 
+
+set sources(*)		{a b c d}
+
+foreach _name $sources(*) { puts $_name }
+
+exit
+
 cd /tmp
 
 # @ exec /usr/bin/wget http://ftp.de.debian.org/debian-ports/pool-ppc64/main/l/linux/kernel-image-3.16.0-4-powerpc64-di_3.16.7-ckt7-1_ppc64.udeb

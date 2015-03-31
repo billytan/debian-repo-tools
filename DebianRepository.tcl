@@ -10,6 +10,12 @@ oo::class create DebianRepository {
 	variable packages 
 	variable sources
 
+	#
+	# for those packages with multiple versions ...
+	#
+	variable x_sources
+	variable x_packages
+	
 	variable ARCH
 	variable suite
 	
@@ -18,8 +24,8 @@ oo::class create DebianRepository {
 		
 		set suite			"jessie"
 
-		set packages		[list]
-		set sources			[list]
+		set packages(*)			[list]
+		set sources(*)			[list]
 		
 		puts "DebianRepository constructor called."
 	}
@@ -78,10 +84,10 @@ oo::class create DebianRepository {
 		
 		upvar $arr_name _pkg
 		
-		foreach _r $packages {
+		foreach _name $packages(*) {
 	
 			unset -nocomplain _pkg
-			array set _pkg $_r
+			array set _pkg $packages($_name)
 			
 			uplevel 1 $script
 		}
@@ -91,85 +97,38 @@ oo::class create DebianRepository {
 	
 		upvar $arr_name _pkg
 		
-		foreach _r $sources {
+		foreach _name $sources(*) {
 	
 			unset -nocomplain _pkg
-			array set _pkg $_r
+			array set _pkg $sources($_name)
 			
 			uplevel 1 $script
 		}
 	
 	}
 
-	#
-	# WE NOTICED THAT, the latest version is always the last one
-	#
 	method package { _name args } {
 	
-		set result			[list]
+		if ![info exists packages($_name)] { return [list] }
 	
-		foreach _r $packages {
-			unset -nocomplain _pkg
-			array set _pkg $_r
-			
-			if { $_pkg(Package) == $_name } { set result $_r } 
-		}
-	
-		return $result
+		return $packages($_name)
 	}
 
 	method source { _name args } {
 	
-		set result		[list]
-		
-		foreach _r $sources {
-			unset -nocomplain _pkg
-			array set _pkg $_r
-			
-			if { $_pkg(Package) == $_name } { set result $_r } 
-		}
-		
-		return $result
+		if ![info exists sources($_name)] { return [list] }
+	
+		return $sources($_name)
 	}
 
-
-	method find_package { _name args } {
-	
-		foreach _r $packages {
-			unset -nocomplain _pkg
-			array set _pkg $_r
-			
-			if { $_pkg(Package) == $_name } { return $_r } 
-		}
-		
-		return [list]
-	}
-	
-	method find_source { _name args } {
-	
-		foreach _r $sources {
-			unset -nocomplain _pkg
-			array set _pkg $_r
-			
-			if { $_pkg(Package) == $_name } { return $_r } 
-		}
-		
-		return [list]	
-	}
 	
 	method __remove_source_package { _name args } {
+
+		unset -nocomplain sources($_name)
 	
-		set j		-1
+		set j		[lsearch -exact $sources(*) $_name]
 		
-		foreach _r $sources {
-			incr j
-			
-			unset -nocomplain _pkg
-			array set _pkg $_r
-			
-			if { $_pkg(Package) == $_name } { set sources [lreplace $sources $j $j] } 
-		}
-	
+		if { $j >= 0 } { set sources(*) [lreplace $sources(*) $j $j ] }	
 	}
 	
 	#
@@ -207,29 +166,43 @@ oo::class create DebianRepository {
 	}
 
 
+	#
+	# if we call "compare_version" to check, untolerably slow as we are dealting with 20197 packages ...!!!
+	#
 	method __add_source_package { _r } {
 	
 		array set _pkg $_r
 		
+		set _name		$_pkg(Package)
+		
 		#
 		# check if a different version exists ...
 		#
-		set result		[my source $_pkg(Package)]
+		if ![info exists sources($_name)] { lappend sources(*) $_name ; set sources($_name) $_r ; return }
 		
-		if [is_empty_list $result] { lappend sources $_r ; return }
-
-		array set _arr $result
-
-		set retcode		[my compare_version $_arr(Version) $_pkg(Version) ] 
-		
-		if { $retcode < 0 } { my __remove_source_package $_pkg(Package) }
-		
-		lappend sources $_r
-		
+		#
+		# WE NOTICED THAT, the latest version is always the lastest one
+		#
+		lappend x_sources($_name) $sources($_name)
+	
+		set sources($_name) $_r
 		return
 	}
 	
+	method __add_package { _r } {
 	
+		array set _pkg $_r
+		
+		set _name		$_pkg(Package)
+		
+		if ![info exists packages($_name)] { lappend packages(*) $_name ; set packages($_name) $_r ; return }
+		
+		puts "WARNING: found a package with multiple versions '$_name' "
+		
+		lappend x_packages($_name) $packages($_name)
+	
+		set packages($_name) $_r
+	}
 }
 
 
