@@ -13,8 +13,14 @@ oo::class create DebianRemoteRepository {
 	
 	constructor { _url _suite args } {
 		variable	suite
-		
+
 		set suite		$_suite
+
+		#
+		# FIXME
+		#    how to invoke baseclass constructor
+		#
+		next
 		
 		eval [list my __init $_url] $args
 		
@@ -117,7 +123,9 @@ oo::class create DebianRemoteRepository {
 			#
 			# otherwise, you'll never notice the error message
 			#
-			eval exec /usr/bin/apt-get -y $apt_config update 2>@1
+			# eval exec /usr/bin/apt-get -y $apt_config update 2>@1
+			
+			eval @ exec /usr/bin/apt-get -y $apt_config update
 		} result
 	
 		#
@@ -174,16 +182,24 @@ oo::class create DebianRemoteRepository {
 	# no way to ask apt-cache to present a list of source packages .... so we choose to load from the cache !
 	#
 	method load_source_packages { args } {
-		variable	sources
+		variable		sources
 		
 		if !$is_updated { my __update }
 
 		set count		0
 		
 		foreach _pathname [glob -directory "$admin_dir/var/lib/apt/lists" -nocomplain "*_Sources" ] {
-
+			
 			@ read $_pathname << "\n\n" {
 
+				#
+				# there may exists multiple versions of a particular source package
+				#
+				
+				#
+				# untolerably slow as we are dealting with 20197 packages ...!!!
+				#
+				# my __add_source_package [my parse_package $_]
 				lappend sources [my parse_package $_]
 				
 				incr count
@@ -193,6 +209,7 @@ oo::class create DebianRemoteRepository {
 		
 		if [getopt $args "-verbose"] { puts "$count packages loaded." }
 	}
+	
 	
 	#
 	# get a specified package
@@ -219,6 +236,13 @@ oo::class create DebianRemoteRepository {
 		}
 		
 		return $pathname
+	}
+	
+	
+	method get_source { _pkgname args } {
+	
+	
+	
 	}
 	
 	

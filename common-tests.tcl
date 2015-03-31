@@ -4,6 +4,13 @@
 
 source "common.tcl"
 
+cd /tmp
+
+# @ exec /usr/bin/wget http://ftp.de.debian.org/debian-ports/pool-ppc64/main/l/linux/kernel-image-3.16.0-4-powerpc64-di_3.16.7-ckt7-1_ppc64.udeb
+@ exec /usr/bin/wget "http://ftp.cn.debian.org/debian/pool/main/l/linux/linux_3.16.7-ckt7.orig.tar.xz"
+
+exit
+
 set count		0
 
 @ read "/var/lib/apt/lists/ftp.cn.debian.org_debian_dists_jessie_main_source_Sources" << "\n\n" {

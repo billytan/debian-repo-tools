@@ -20,12 +20,19 @@ oo::class create DebianRepository {
 
 		set packages		[list]
 		set sources			[list]
+		
+		puts "DebianRepository constructor called."
 	}
 	
 	#
 	# NOTE that, only for source packages, multi-line fields are available
 	#
 	method parse_package { _text args } {
+		
+		#
+		# sanity check
+		#
+		if { [string trim $_text ] == "" } { return [list] }
 		
 		@ foreach _line $_text {
 	
@@ -53,6 +60,14 @@ oo::class create DebianRepository {
 			set _value	[string range $_line $j end]
 		
 			set _pkg($tagname) [string trim $_value]
+		}
+		
+		#
+		# sanity check
+		#
+		if ![info exists _pkg(Package) ] {
+		
+			return -code error "invalid source package : $_text"
 		}
 		
 		return [array get _pkg]	
@@ -86,7 +101,39 @@ oo::class create DebianRepository {
 	
 	}
 
+	#
+	# WE NOTICED THAT, the latest version is always the last one
+	#
 	method package { _name args } {
+	
+		set result			[list]
+	
+		foreach _r $packages {
+			unset -nocomplain _pkg
+			array set _pkg $_r
+			
+			if { $_pkg(Package) == $_name } { set result $_r } 
+		}
+	
+		return $result
+	}
+
+	method source { _name args } {
+	
+		set result		[list]
+		
+		foreach _r $sources {
+			unset -nocomplain _pkg
+			array set _pkg $_r
+			
+			if { $_pkg(Package) == $_name } { set result $_r } 
+		}
+		
+		return $result
+	}
+
+
+	method find_package { _name args } {
 	
 		foreach _r $packages {
 			unset -nocomplain _pkg
@@ -96,6 +143,33 @@ oo::class create DebianRepository {
 		}
 		
 		return [list]
+	}
+	
+	method find_source { _name args } {
+	
+		foreach _r $sources {
+			unset -nocomplain _pkg
+			array set _pkg $_r
+			
+			if { $_pkg(Package) == $_name } { return $_r } 
+		}
+		
+		return [list]	
+	}
+	
+	method __remove_source_package { _name args } {
+	
+		set j		-1
+		
+		foreach _r $sources {
+			incr j
+			
+			unset -nocomplain _pkg
+			array set _pkg $_r
+			
+			if { $_pkg(Package) == $_name } { set sources [lreplace $sources $j $j] } 
+		}
+	
 	}
 	
 	#
@@ -114,7 +188,16 @@ oo::class create DebianRepository {
 			exec /usr/bin/dpkg --compare-versions $ver1 lt $ver2
 		} _output _status
 	
-		puts "$_output"
+		#
+		# check for error message
+		#
+		if { [string first "child process exited abnormally" $_output] >= 0 } {
+			
+			#
+			# it is what exactly we are expecting ...
+			#
+			return 1
+		}
 	
 		array set _arr $_status
 	
@@ -123,6 +206,30 @@ oo::class create DebianRepository {
 		return 1
 	}
 
+
+	method __add_source_package { _r } {
+	
+		array set _pkg $_r
+		
+		#
+		# check if a different version exists ...
+		#
+		set result		[my source $_pkg(Package)]
+		
+		if [is_empty_list $result] { lappend sources $_r ; return }
+
+		array set _arr $result
+
+		set retcode		[my compare_version $_arr(Version) $_pkg(Version) ] 
+		
+		if { $retcode < 0 } { my __remove_source_package $_pkg(Package) }
+		
+		lappend sources $_r
+		
+		return
+	}
+	
+	
 }
 
 

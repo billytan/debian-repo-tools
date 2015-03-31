@@ -157,6 +157,39 @@ proc @ { args } {
 		
 		return
 	}
+	
+	#
+	# @ exec $prog $args > $output 2> $error_output  
+	#
+	# @ exec $prog $args 2>@1
+	#
+	if { $_arg1 == "exec" } {
+		
+		set cmd_line	[lindex $args 1]
+
+		foreach _arg [lrange $args 2 end] {
+		
+			append cmd_line " \"$_arg\""
+		}
+		
+		# puts "cmd_line = $cmd_line"
+		
+		set _chan		[open "| $cmd_line 2>@1" "r"]
+		
+		fconfigure $_chan -translation binary -encoding binary -buffering none -blocking 0
+		
+		fileevent $_chan readable [list RUN _chan $_chan CODE {
+		
+			if [eof $_chan] { close $_chan ; set ::@(exec) 1; return }
+			
+			puts -nonewline [read $_chan]
+			flush stdout
+		}]
+		
+		vwait ::@(exec)
+		
+		return
+	}
 }
 
 rename unknown @unknown
@@ -591,7 +624,12 @@ proc split2 { s substr } {
 		set j		[string first $substr $s $start_j]
 	
 		if {$j < 0 } {
-			lappend result		[string range $s $start_j end]
+			#
+			# empty string will a big annoyance to callers ...
+			#
+			set _text			[string range $s $start_j end]
+			
+			if { $_text != "" } { lappend result $_text }
 			break
 		}
 		
