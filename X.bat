@@ -11,6 +11,8 @@ call C:\bin\X.bat sugou /baixibao2/baixibao2_repo_root/tests DebianLocalReposito
 call C:\bin\X.bat sugou /baixibao2/baixibao2_repo_root/tests DebianRemoteRepository.tcl
 call C:\bin\X.bat sugou /baixibao2/baixibao2_repo_root/tests DebianRemoteRepository-tests.tcl
 
+call C:\bin\X.bat sugou /baixibao2/baixibao2_repo_root/tests my-apt-cache.sh
+
 
 REM call C:\bin\X.bat sugou /baixibao2/baixibao2_repo_root/tests G:/kbskit/kbskit-0.4.6/Linux64_kbsmk8.6-cli
 

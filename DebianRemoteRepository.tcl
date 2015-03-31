@@ -6,16 +6,24 @@
 oo::class create DebianRemoteRepository {
 	superclass DebianRepository
 	
-	variable admin_dir
-	variable apt_config
+	variable	admin_dir
+	variable	apt_config
 	
-	constructor { url args } {
-
-		eval [list my __init $url] $args
+	variable	is_updated
+	
+	constructor { _url _suite args } {
+		variable	suite
+		
+		set suite		$_suite
+		
+		eval [list my __init $_url] $args
+		
+		set is_updated		0
 	}
 	
-	method __init { url suite args } {
+	method __init { _url args } {
 		variable	ARCH
+		variable	suite
 		
 		foreach url $args break
 
@@ -55,7 +63,14 @@ oo::class create DebianRemoteRepository {
 		
 		my apt_setup $admin_dir
 		
-		@file "deb \[arch=$_args(--arch), trusted=yes\]  $url $suite $_args(--components) " >> $admin_dir/etc/apt/sources.list
+		@file "deb \[arch=$_args(--arch), trusted=yes\]  $_url $suite $_args(--components) " > $admin_dir/etc/apt/sources.list
+		
+		#
+		# also source packages
+		#
+		if { [getopt $args "-source"] != "" } {
+			@file "deb-src \[arch=$_args(--arch), trusted=yes\]  $_url $suite $_args(--components) " > $admin_dir/etc/apt/sources.list
+		}
 	}
 	
 	
@@ -86,37 +101,56 @@ oo::class create DebianRemoteRepository {
 		append apt_config	"  -o Dir::Etc::SourceList=$admin_dir/etc/apt/sources.list"
 		append apt_config	"  -o Dir::Etc::SourceParts=$admin_dir/etc/apt/sources.list.d"
 
-		append apt_config	"  -o Dir::State=$admin_dir/var/lib/dpkg"
+		append apt_config	"  -o Dir::State=$admin_dir/var/lib/apt"
 
 		append apt_config	"  -o Dir::State::Status=$admin_dir/var/lib/dpkg/status"
 
-		append apt_config	"  -o Dir::Cache=$admin_dir/var/lib/dpkg"	
-		
-		append apt_config	"  -o Dir::State::Lists=$admin_dir/var/lib/dpkg/lists"
+		append apt_config	"  -o Dir::Cache=$admin_dir/var/lib/apt"	
 	}
 	
 	
-	method load_packages { args } {
-		variable packages
+	method __update { args } {
+	
+		# puts "/usr/bin/apt-get -y $apt_config update"
 		
 		catch {
-			puts "/usr/bin/apt-get -y $apt_config update"
-		
-			exec /usr/bin/apt-get -y $apt_config update 
+			#
+			# otherwise, you'll never notice the error message
+			#
+			eval exec /usr/bin/apt-get -y $apt_config update 2>@1
 		} result
+	
+		#
+		# FIXME
+		#	check for error message ...
+		#
 		
 		puts $result
+	
+		set is_updated		1
+	}
+	
+	method load_packages { args } {
+		variable packages
+
+		if !is_updated { my __update }
 		
 		set packages		[list]
 
+		# puts "/usr/bin/apt-cache $apt_config dumpavail"
+		
 		catch {
-			puts "/usr/bin/apt-cache $apt_config dumpavail"
-			
-			exec /usr/bin/apt-cache $apt_config dumpavail
+		
+			eval exec /usr/bin/apt-cache $apt_config dumpavail
 		} result
 		
 		# @file $result >> /tmp/Packages
 		
+		#
+		# FIXME
+		#   check if there is any error message
+		#
+			
 		set count		0
 		
 		@ foreach _r $result << "\n\n" {
@@ -125,7 +159,7 @@ oo::class create DebianRemoteRepository {
 	
 			incr count
 			
-			show_progress "Loading packages %6d" $count
+			if [getopt $args "-verbose"]  { show_progress "Loading packages %6d" $count }
 			
 			#
 			# NOT SURE IF "break" will work ... IT WORKS WELL !!!
@@ -133,16 +167,58 @@ oo::class create DebianRemoteRepository {
 			if { $count > 1000 } break
 		}
 		
-		puts "$count packages loaded."
+		if [getopt $args "-verbose"]  { puts "$count packages loaded." }
 	}
 
 	#
+	# no way to ask apt-cache to present a list of source packages .... so we choose to load from the cache !
+	#
+	method load_source_packages { args } {
+		variable	sources
+		
+		if !$is_updated { my __update }
+
+		set count		0
+		
+		foreach _pathname [glob -directory "$admin_dir/var/lib/apt/lists" -nocomplain "*_Sources" ] {
+
+			@ read $_pathname << "\n\n" {
+
+				lappend sources [my parse_package $_]
+				
+				incr count
+				if [getopt $args "-verbose"] { show_progress "loading %6d" $count }
+			}
+		}
+		
+		if [getopt $args "-verbose"] { puts "$count packages loaded." }
+	}
+	
+	#
 	# get a specified package
 	#
-	method download { args } {
+	method download { _pkgname args } {
 	
-	
-	
+		eval exec /usr/bin/apt-get $apt_config download $_pkgname 2>@1
+		
+		#
+		# FIXME:
+		#   check if any error message ...
+		#
+		array set _pkg [my package $_pkgname ]
+		
+		# parray _pkg
+		# Filename: pool/main/a/alien/alien_8.93_all.deb
+		#
+		set _fname			[file tail $_pkg(Filename)]
+		
+		set pathname		[file join [pwd] $_fname ]
+		
+		if ![file exists $pathname] {
+			return -code error "failed to download $_pkg(Filename) "
+		}
+		
+		return $pathname
 	}
 	
 	

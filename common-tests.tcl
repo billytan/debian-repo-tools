@@ -4,6 +4,18 @@
 
 source "common.tcl"
 
+set count		0
+
+@ read "/var/lib/apt/lists/ftp.cn.debian.org_debian_dists_jessie_main_source_Sources" << "\n\n" {
+
+	puts $_
+	
+	incr count
+	
+	if { $count > 15 } break
+}
+
+exit
 
 set retcode		[getopt  { "$REPO_DIR/dists/jessie/main/binary-ppc64/Packages.gz" -verbose } -verbose ]
 

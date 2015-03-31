@@ -127,6 +127,36 @@ proc @ { args } {
 		
 		return
 	}
+	
+	
+	#
+	# @ read $filename << "\n\n" { .... }
+	#
+	# @ read $filename { ... } 
+	#
+	if { $_arg1 == "read" } {
+	
+		set pathname		[lindex $args 1]
+		
+		foreach { script _sep _x } [lreverse [lrange $args 2 end] ] break
+		
+		if { ![info exists _sep] || ($_x != "<<") } { set _sep "\n" }
+		
+		set _chan		[open $pathname "r"]
+		fconfigure $_chan -translation binary -encoding binary
+		
+		set file_data	[read $_chan]
+		close $_chan
+		
+		upvar _ _r
+		
+		foreach _r [split2 $file_data $_sep] {
+		
+			uplevel 1 $script
+		}
+		
+		return
+	}
 }
 
 rename unknown @unknown
@@ -244,6 +274,9 @@ proc RUN2 { args } {
 }
 
 
+
+#
+# *********** DEPRECATED ****************
 #
 # @file $_lines >> $pathname
 #   write a few lines to a new file; overwite it if exists;
@@ -322,10 +355,8 @@ proc @file { args } {
 		
 		return
 	}
-	
-	#TO-DEL
-	if 0 {
-	
+
+
 	#
 	# @file < $pathname << "\n\n" $command
 	#
@@ -358,8 +389,6 @@ proc @file { args } {
 		return
 	}
 	
-	}
-	#TO-DEL
 	
 }
 

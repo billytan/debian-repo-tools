@@ -86,6 +86,18 @@ oo::class create DebianRepository {
 	
 	}
 
+	method package { _name args } {
+	
+		foreach _r $packages {
+			unset -nocomplain _pkg
+			array set _pkg $_r
+			
+			if { $_pkg(Package) == $_name } { return $_r } 
+		}
+		
+		return [list]
+	}
+	
 	#
 	#  for the same version, return 0;
 	#
