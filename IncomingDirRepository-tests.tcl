@@ -10,7 +10,8 @@ source IncomingDirRepository.tcl
 
 if 1 {
 
-	set repo_obj		[IncomingDirRepository new "/baixibao2/buildd_repo_root/Incoming" ]
+	# set repo_obj		[IncomingDirRepository new "/baixibao2/buildd_repo_root/Incoming" ]
+	set repo_obj		[IncomingDirRepository new "/disk2/loongfox-linux-dev/rebootstrap-ppc64/RESULT/debs" ]
 
 	$repo_obj load_packages
 

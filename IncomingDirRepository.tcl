@@ -9,6 +9,9 @@ oo::class create IncomingDirRepository {
 	
 	constructor { _dir args } {
 	
+		#
+		# invoke base class constructor
+		#
 		next
 	
 		set incoming_dir		$_dir
@@ -35,7 +38,7 @@ oo::class create IncomingDirRepository {
 	#
 	#   add support of "-files" option
 	#
-	proc package { _name args } {
+	method package { _name args } {
 	
 		if ![info exists packages($_name)] { return [list] }
 	
