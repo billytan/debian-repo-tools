@@ -46,14 +46,7 @@ oo::class create DebianRepository {
 			# deal with multi-lines
 			#
 			if [begin_with $_line " "] {
-			
-				#
-				# Sanity check: any record MUST begin with a line of "Package:"
-				#
-				if ![info exists _pkg(Package)] {
-					return -code error "invalid source package : $_text"
-				}
-				
+
 				append _pkg($tagname) $_line "\n"
 				continue
 			}
@@ -71,7 +64,7 @@ oo::class create DebianRepository {
 		#
 		# sanity check
 		#
-		if ![info exists _pkg(Package) ] {
+		if { ![info exists _pkg(Package)] && ![info exists _pkg(Source)] } {
 		
 			return -code error "invalid source package : $_text"
 		}
@@ -118,7 +111,23 @@ oo::class create DebianRepository {
 	
 		if ![info exists sources($_name)] { return [list] }
 	
-		return $sources($_name)
+		if ![getopt $args "-files"] { return $sources($_name) }
+		
+		#
+		# return the list of source files
+		#
+		array set _pkg $sources($_name)
+		
+		@ foreach _line $_pkg(Files) {
+		
+			regexp {(\S+)\s+(\S+)\s+(\S+)} $_line _x _md5sum _fsize _fname
+			
+			lappend result $_fname
+			
+			if [getopt $args -size] { lappend result $_fsize  }
+		}
+		
+		return $result
 	}
 
 	
@@ -181,6 +190,12 @@ oo::class create DebianRepository {
 		if ![info exists sources($_name)] { lappend sources(*) $_name ; set sources($_name) $_r ; return }
 		
 		#
+		# FOR DEBUG PURPOSE
+		#
+		# array set _arr $sources($_name)
+		# puts "\n x_source $_arr(Package) $_arr(Version)\n"
+		
+		#
 		# WE NOTICED THAT, the latest version is always the lastest one
 		#
 		lappend x_sources($_name) $sources($_name)
@@ -193,7 +208,10 @@ oo::class create DebianRepository {
 	
 		array set _pkg $_r
 		
-		set _name		$_pkg(Package)
+		#
+		# add support for .changes file, as required by IncomingDirRepository
+		#
+		if [info exists _pkg(Package)] { set _name $_pkg(Package) } else { set _name $_pkg(Source) }
 		
 		if ![info exists packages($_name)] { lappend packages(*) $_name ; set packages($_name) $_r ; return }
 		

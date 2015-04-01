@@ -676,7 +676,7 @@ proc counter { cmd args } {
 	#
 	if { $cmd == "show" } {
 	
-		parray ::counter
+		catch { parray ::counter }
 		return
 	}
 	
