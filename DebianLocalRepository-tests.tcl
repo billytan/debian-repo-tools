@@ -48,7 +48,7 @@ if 0 {
 
 }
 
-if 1 {
+if 0 {
 
 	set REPO_DIR	"/disk2/loongfox-linux-dev/rebootstrap-ppc64/repo"
 	
@@ -69,6 +69,26 @@ if 1 {
 	
 	puts "$count packages found."
 }
+
+
+if 1 {
+
+	set REPO_DIR		"/baixibao2/baixibao_repo_root/debian"
+
+	set repo_obj		[DebianLocalRepository new $REPO_DIR --arch ppc64 ]
+
+	#
+	# first, check if we can remove a package, and reprepro can re-sign the Packages.gz files 
+	#
+	# $repo_obj remove zzuf
+	
+	catch {
+		$repo_obj install "/baixibao2/buildd_repo_root/Incoming/zzuf_0.13.svn20100215-4.1_ppc64.changes"
+	} _out
+	
+	puts $_out
+}
+
 
 $repo_obj destroy
 

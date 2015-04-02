@@ -7,6 +7,8 @@ oo::class create IncomingDirRepository {
 	
 	variable	incoming_dir
 	
+	variable	__changes
+	
 	constructor { _dir args } {
 	
 		#
@@ -23,13 +25,24 @@ oo::class create IncomingDirRepository {
 		
 		foreach _pathname [glob -directory $incoming_dir -types {f} -nocomplain "*.changes"] {
 		
+			incr count; if [getopt $args "-verbose"] { show_progress "loading %5d" $count }
+			
 			#
 			# NOTE THAT, "package" = "source package"
 			#
-			my __add_package [my parse_changes_file $_pathname]
+			set _name		[my __add_package [my parse_changes_file $_pathname] ]
 		
-			incr count; if { $count > 20 } break
+			# @file $_name > /tmp/changes.txt
+			
+			#
+			# WE HAVE TO KEEP IT 
+			#
+			set __changes($_name)			[file tail $_pathname]
+			
+			# if { $count > 20 } break
 		}
+		
+		if [getopt $args "-verbose"] { puts "$count packages loaded." }
 	}
 	
 	
@@ -39,8 +52,13 @@ oo::class create IncomingDirRepository {
 	#   add support of "-files" option
 	#
 	method package { _name args } {
-	
+		variable	packages
+
+		# puts "CALL package $_name $args"
+		
 		if ![info exists packages($_name)] { return [list] }
+
+		if [getopt $args "-changes"] { return $__changes($_name) }
 	
 		if ![getopt $args "-files"] { return $packages($_name) }
 		
@@ -51,7 +69,7 @@ oo::class create IncomingDirRepository {
 		
 		@ foreach _line $_pkg(Files) {
 		
-			puts "_line = $_line"
+			# puts "_line = $_line"
 			
 			regexp {(\S+)\s+(\S+)\s+(\S+)\s+(\S+)\s+(\S+)} $_line _x _md5sum _fsize _x _x _fname
 			
@@ -71,20 +89,7 @@ oo::class create IncomingDirRepository {
 	
 	}
 	
-	method parse_changes_file { pathname args } {
-	
-		#
-		# for those files signed by buildd, strip off "PGP SIGNED MESSAGE"
-		#
-		@ read $pathname << "\n\n" { 
-	
-			if { [string first "Source:" $_ ] > 0 } { set _text $_ ; break }
-		}
-		
-		if ![info exists _text ] { return -code error "invalid .changes file $pathname" }
-		
-		return [my parse_package $_text ]
-	}
+
 	
 }
 

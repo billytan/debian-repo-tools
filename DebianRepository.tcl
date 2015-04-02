@@ -72,7 +72,22 @@ oo::class create DebianRepository {
 		return [array get _pkg]	
 	}
 	
-
+	method parse_changes_file { pathname args } {
+	
+		#
+		# for those files signed by buildd, strip off "PGP SIGNED MESSAGE"
+		#
+		@ read $pathname << "\n\n" { 
+	
+			if { [string first "Source:" $_ ] > 0 } { set _text $_ ; break }
+		}
+		
+		if ![info exists _text ] { return -code error "invalid .changes file $pathname" }
+		
+		return [my parse_package $_text ]
+	}
+	
+	
 	method foreach_package { arr_name script args } {
 		
 		upvar $arr_name _pkg
@@ -187,7 +202,7 @@ oo::class create DebianRepository {
 		#
 		# check if a different version exists ...
 		#
-		if ![info exists sources($_name)] { lappend sources(*) $_name ; set sources($_name) $_r ; return }
+		if ![info exists sources($_name)] { lappend sources(*) $_name ; set sources($_name) $_r ; return $_name }
 		
 		#
 		# FOR DEBUG PURPOSE
@@ -201,7 +216,7 @@ oo::class create DebianRepository {
 		lappend x_sources($_name) $sources($_name)
 	
 		set sources($_name) $_r
-		return
+		return $_name
 	}
 	
 	method __add_package { _r } {
@@ -213,14 +228,55 @@ oo::class create DebianRepository {
 		#
 		if [info exists _pkg(Package)] { set _name $_pkg(Package) } else { set _name $_pkg(Source) }
 		
-		if ![info exists packages($_name)] { lappend packages(*) $_name ; set packages($_name) $_r ; return }
+		if ![info exists packages($_name)] { lappend packages(*) $_name ; set packages($_name) $_r ; return $_name }
 		
 		puts "WARNING: found a package with multiple versions '$_name' "
 		
 		lappend x_packages($_name) $packages($_name)
 	
 		set packages($_name) $_r
+		
+		return $_name
 	}
+	
+	
+		#
+	# [OPTIONAL]
+	#
+	# show a progress message, "loading 35% "
+	#
+	method load_big_file { _chan args } {
+	
+	
+	
+	}
+	
+
+	method open_zipped_file { pathname } {
+
+		#
+		# if given a compressed file ...
+		#
+		set _ext		[file extension [file tail $pathname]]
+
+		switch -exact $_ext {
+
+			".gz" { set _chan		[open "| /bin/zcat $pathname" "r"] }
+
+			".xz" { set _chan		[open "| /usr/bin/xzcat $pathname" "r"] }
+
+			".bz2" { set _chan		[open "| /bin/bzcat $pathname" "r"] }
+
+			default { set _chan		[open $pathname "r"] }
+
+		}
+
+		# fconfigure $_chan -translation cr
+		fconfigure $_chan -translation auto
+
+		return $_chan
+	}
+	
 }
 
 

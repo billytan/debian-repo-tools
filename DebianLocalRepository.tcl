@@ -13,6 +13,7 @@ oo::class create DebianLocalRepository {
 	
 	constructor { _dir args } {
 		variable	suite
+		variable	ARCH
 		
 		#
 		# invoke base class constructor
@@ -21,17 +22,18 @@ oo::class create DebianLocalRepository {
 		
 		set repo_dir		$_dir
 
-		set _s		[getopt $args "-suite=%s"]
+		set _s		[getopt $args "--suite=%s"]
 		if { $_s != "" } { set suite $_s }
+		
+		set _s		[getopt $args "--arch=%s"]
+		if { $_s != "" } { set ARCH $_s }
 	}
 
 	#
-	# provided with Sources.gz or Packages.gz
+	# provided with Packages.gz
 	#
 	method load { pathname args } {
-			
-		if { [string first "Sources" $pathname] >= 0 } { set is_source  1 } else { set is_source 0 }
-		
+
 		set _chan		[my open_zipped_file $pathname]
 
 		fconfigure $_chan -translation binary -encoding binary
@@ -51,9 +53,7 @@ oo::class create DebianLocalRepository {
 			#
 			# invole parse_package OR parse_source_package
 			#
-			set result			[my parse_package $_r ]
-
-			if $is_source { my __add_source_package $result } else { my __add_package $result }	
+			my __add_package [my parse_package $_r ]
 
 			incr count
 			
@@ -68,63 +68,35 @@ oo::class create DebianLocalRepository {
 		return $count
 	}
 	
+
 	#
-	# [OPTIONAL]
-	#
-	# show a progress message, "loading 35% "
-	#
-	method load_big_file { _chan args } {
-	
-	
-	
-	}
-	
-
-	method open_zipped_file { pathname } {
-
-		#
-		# if given a compressed file ...
-		#
-		set _ext		[file extension [file tail $pathname]]
-
-		switch -exact $_ext {
-
-			".gz" { set _chan		[open "| /bin/zcat $pathname" "r"] }
-
-			".xz" { set _chan		[open "| /usr/bin/xzcat $pathname" "r"] }
-
-			".bz2" { set _chan		[open "| /bin/bzcat $pathname" "r"] }
-
-			default { set _chan		[open $pathname "r"] }
-
-		}
-
-		# fconfigure $_chan -translation cr
-		fconfigure $_chan -translation auto
-
-		return $_chan
-	}
-
-	
-	#
-	# provided with a .dsc file for source package, or .changes file for a compiled package, or a single .deb file
+	# provided with a .changes file for a compiled package, or a single .deb file
 	#
 	method install { pathname args } {
-	
+		variable	suite
+		
 		set _ext		[file extension [file tail $pathname]]
 	
 		if { $_ext == ".changes" } {
 		
-		}
+			array set src_pkg [my parse_changes_file $pathname ]
 		
-		if { $_ext == ".dsc" } {
-
-
-			if [catch {
-				exec /usr/bin/reprepro -V -b $repo_dir includedsc $suite $pathname
-				
-			} errmsg] {
-				# puts $errmsg
+			#
+			# if exists, remove it at first ...
+			#
+			my remove $src_pkg(Source)
+			
+			#
+			# possibly, got a package built for unstable
+			#
+			catch {
+				exec /usr/bin/reprepro -V --ignore=wrongdistribution -b $repo_dir include $suite $pathname
+			} _out
+			
+			# puts $_out
+			
+			if { [string first "errors" $_out] > 0 } {
+				return -code error $_out
 			}
 			
 			return
@@ -136,6 +108,29 @@ oo::class create DebianLocalRepository {
 		}
 	}
 
+
+	method remove { src_pkg args } {
+		variable	suite
+		variable	ARCH
+		
+		puts "CALL remove $src_pkg $args"
+		
+		#
+		# limit to the specified architecture
+		#
+		catch {
+			exec /usr/bin/reprepro -V -b $repo_dir -A $ARCH remove $suite $src_pkg
+
+		} _out
+	
+		if { [string first "Not removed as not found" $_out] > 0 } return
+		
+		puts $_out
+		
+		if { [string first "errors" $_out] > 0 } {
+			return -code error $_out
+		}
+	}
 
 	destructor {
 	
