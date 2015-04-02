@@ -6,7 +6,7 @@
 # dedicated for the management of source packages
 #
 
-oo::class create DebianLocalRepository {
+oo::class create DebianLocalSourceRepository {
 	superclass DebianRepository
 	
 	variable repo_dir
@@ -75,17 +75,13 @@ oo::class create DebianLocalRepository {
 	
 		if { $_ext != ".dsc" } { return -code error "invalid source package $pathname" }
 
+		catch {
+			exec /usr/bin/reprepro -V -b $repo_dir includedsc $suite $pathname		
+		}  result
 
-			if [catch {
-				exec /usr/bin/reprepro -V -b $repo_dir includedsc $suite $pathname
-				
-			} errmsg] {
-				# puts $errmsg
-			}
-			
-			return
-		}
-		
+		#
+		# FIXME check for error message
+		#
 	}
 	
 	destructor {

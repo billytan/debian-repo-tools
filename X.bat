@@ -24,6 +24,10 @@ call C:\bin\X.bat sugou /baixibao2/baixibao2_repo_root/tests DebianRemoteSourceR
 call C:\bin\X.bat sugou /baixibao2/baixibao2_repo_root/tests DebianRemoteSourceRepository-tests.tcl
 
 
+call C:\bin\X.bat sugou /baixibao2/baixibao2_repo_root/tests DebianLocalSourceRepository.tcl
+REM call C:\bin\X.bat sugou /baixibao2/baixibao2_repo_root/tests DebianLocalSourceRepository-tests.tcl
+
+
 REM call C:\bin\X.bat sugou /baixibao2/baixibao2_repo_root/tests my-apt-cache.sh
 
 
