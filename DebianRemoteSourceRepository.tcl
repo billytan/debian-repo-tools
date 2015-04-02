@@ -2,31 +2,51 @@
 # DebianRemoteSourceRepository.tcl
 #
 
-
-oo::class create DebianRemoteRepository {
+oo::class create DebianRemoteSourceRepository {
 	superclass DebianRepository
 	
-	variable	is_updated
+	variable	cache_obj
 	
 	constructor { _url _suite args } {
-		variable	suite
-
+	
+		set cache_obj		[eval [list DebianRepositoryCache new $_url $_suite -source] $args]
+	
 		#
-		# FIXME
-		#    how to invoke baseclass constructor
+		# invoke baseclass constructor
 		#
 		next
-
-		set suite		$_suite
-		set is_updated		0
-		
-		eval [list my __init $_url] $args
 	}
 	
+	
+	#
+	# no way to ask apt-cache to present a list of source packages .... so we choose to load from the cache !
+	#
+	method load_source_packages { args } {
+		
+		set count		0
+		
+		foreach _pathname [$cache_obj get_Sources_files ] {
+			
+			@ read $_pathname << "\n\n" {
+
+				#
+				# there may exists multiple versions of a particular source package
+				#
+				my __add_source_package [my parse_package $_]
+				
+				incr count
+				if [getopt $args "-verbose"] { show_progress "loading %6d" $count }
+			}
+		}
+		
+		if [getopt $args "-verbose"] { puts "$count packages loaded." }
+	}
+	
+	
 	method get_source { _pkgname args } {
-	
-		eval exec /usr/bin/apt-get $apt_config --download-only source $_pkgname 2>@1
-	
+		
+		$cache_obj apt-get --download-only source $_pkgname
+		
 		#
 		# check if the list of files are downloaded
 		#		
@@ -53,9 +73,7 @@ oo::class create DebianRemoteRepository {
 
 	destructor {
 	
-		#puts "removing $admin_dir ..."
-		
-		file delete -force $admin_dir
+		$cache_obj destroy
 	}
 	
 }
