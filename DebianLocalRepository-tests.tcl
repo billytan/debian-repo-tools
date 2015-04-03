@@ -71,7 +71,7 @@ if 0 {
 }
 
 
-if 1 {
+if 0 {
 
 	set REPO_DIR		"/baixibao2/baixibao_repo_root/debian"
 
@@ -87,6 +87,29 @@ if 1 {
 	} _out
 	
 	puts $_out
+}
+
+if 1 {
+
+	set repo_dir		"/baixibao2/baixibao_repo_root/debian"
+	
+	#
+	# we have to scan the local repository in the first place ...
+	#
+	set repo_obj		[DebianLocalRepository new $repo_dir --arch ppc64 ]
+
+	$repo_obj load  "$repo_dir/dists/jessie/main/binary-ppc64/Packages.gz" -verbose
+	
+	puts "\n"
+	
+	#
+	# MUST call this, in order to generate the list of "Sources"
+	#
+	$repo_obj scan_sources -verbose
+
+	set src_pkg		"abiword"
+	
+	$repo_obj remove $src_pkg
 }
 
 

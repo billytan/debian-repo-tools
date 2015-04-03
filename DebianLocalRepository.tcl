@@ -70,6 +70,56 @@ oo::class create DebianLocalRepository {
 	
 
 	#
+	# In some cases, we need to remove all the related packages belong to a paticular source package
+	#
+	method scan_sources { args } {
+		variable	packages
+		variable	sources
+		
+		set count		0
+		
+		my foreach_package _pkg {
+		
+			set _name		$_pkg(Package)
+			
+			if [info exists _pkg(Source)] { set _name $_pkg(Source) }
+		
+			if ![info exists sources($_name)] {
+				lappend sources(*) $_name
+				
+				set sources($_name)		[list $_pkg(Package) $_pkg(Version) ]
+				
+				incr count
+				if [getopt $args "-verbose"] { show_progress "Sources %5d" $count }
+				
+			} else {
+				lappend sources($_name) $_pkg(Package) $_pkg(Version)
+			}
+		}
+		
+		if [getopt $args "-verbose"] { puts "$count source packages found." }
+	}
+
+
+	#
+	# ****** OVERLOAD ******
+	#
+	method source { _name args } {
+		variable	sources
+		
+		if ![info exists sources($_name)] { return [list] }
+		
+		set _arr(name)		$_name
+	
+		foreach { pkg_name _ver } $sources($_name) { set _arr(Version) $_ver ; break }
+		
+		set _arr(packages)		$sources($_name)
+		
+		return [array get _arr]
+	}
+	
+	
+	#
 	# provided with a .changes file for a compiled package, or a single .deb file
 	#
 	method install { pathname args } {
@@ -108,35 +158,49 @@ oo::class create DebianLocalRepository {
 		}
 	}
 
-
+	#
+	# return the list of packages removed
+	#
 	method remove { src_pkg args } {
 		variable	suite
 		variable	ARCH
+		variable	sources
 		
 		puts "CALL remove $src_pkg $args"
 		
-		#
-		# limit to the specified architecture
-		#
-		catch {
-			exec /usr/bin/reprepro -V -b $repo_dir -A $ARCH remove $suite $src_pkg
-
-		} _out
-	
-		if { [string first "Not removed as not found" $_out] > 0 } return
+		if ![info exists sources($src_pkg)] {
 		
-		puts $_out
-		
-		if { [string first "errors" $_out] > 0 } {
-			return -code error $_out
+			puts "    $src_pkg NOT FOUND"
+			
+			return [list]
+			
+			# return -code error "invalid source package name '$src_pkg`"
 		}
+		
+		foreach { pkg_name _ver } $sources($src_pkg) {
+
+			puts "    remove $pkg_name $_ver"
+			
+			#
+			# limit to the specified architecture
+			#
+			catch {	exec /usr/bin/reprepro -V -b $repo_dir -A $ARCH remove $suite $pkg_name } _out
+	
+			puts $_out
+			
+			if { [string first "Not removed as not found" $_out] > 0 } continue
+		
+			if { [string first "errors" $_out] > 0 } { return -code error $_out	}
+
+			puts "$pkg_name $_ver removed."	
+			
+			lappend result $pkg_name $_ver
+		}
+		
+		return $result
 	}
 
-	destructor {
-	
-		puts "destroy CALLED."
-		return
-	}
+	destructor {}
 
 }
 

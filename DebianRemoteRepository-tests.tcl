@@ -18,7 +18,7 @@ set repo_obj		[DebianRemoteRepository new "http://192.168.133.126/ppc64/debian" 
 
 # set repo_obj		[DebianRemoteRepository new "http://192.168.1.80/debian" jessie -source 1 ]
 
-if 1 {
+if 0 {
 
 	$repo_obj load_packages -verbose
 
@@ -35,20 +35,11 @@ if 1 {
 	$repo_obj download alien
 }
 
-if 0 {
+if 1 {
 
-	$repo_obj load_source_packages -verbose
+	$repo_obj load_packages -verbose
 
-	set count		0
-
-	$repo_obj foreach_source_package _pkg {
-
-		puts "$_pkg(Package)"
-		
-		foreach _line [split $_pkg(Files) "\n"] { puts "    $_line" }
-
-		incr count; if { $count > 10 } break;
-	}
+	$repo_obj scan_sources -verbose
 
 }
 

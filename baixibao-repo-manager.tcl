@@ -158,6 +158,94 @@ if { $ACTION == "update-sources" } {
 	counter show
 }
 
+#
+# check the versions of packages in Debian PPC64 ports, against the source packages in Debian amd64 repo
+#
+if { $ACTION == "check-sources" } {
+
+	set list_file				[lindex $argv 1] ; file delete $list_file
+	set missing_list_file		[lindex $argv 2] ; file delete $missing_list_file
+	
+	set repo_obj		[DebianRemoteRepository new "http://192.168.133.126/ppc64/debian" sid --arch ppc64 --components main ]
+
+	$repo_obj load_packages -verbose
+
+	$repo_obj scan_sources -verbose
+
+	set mirror_url			"http://ftp.cn.debian.org/debian"
+	set debian_repo_obj		[DebianRemoteSourceRepository new $mirror_url jessie ]
+	
+	# set mirror_url			"http://192.168.133.126/amd64/debian"
+	# set debian_repo_obj		[DebianRemoteSourceRepository new $mirror_url jessie --components main ]
+	
+	$debian_repo_obj load_source_packages -verbose
+	
+	#
+	# check if the version is the same ...
+	#
+	set count		0
+	
+	$repo_obj foreach_package_src _source {
+	
+		set _name		$_source(name)
+		
+		set _r		[$debian_repo_obj source $_name ]
+		
+		if [is_empty_list $_r] { 
+			puts [format "%-40s not-found" $_name]
+			
+			#
+			# FIXME:
+			#    for these packages in debian-ports ppc64, where are the related source packages ???
+			#
+			foreach { _pkgname _ver } $_source(packages) {
+			
+				@file "$_pkgname $_ver" > $missing_list_file
+			}
+			
+			counter +source_packages_missing;
+			incr count ; continue 
+		}
+		
+		# puts $_r
+		
+		unset -nocomplain src_pkg
+		array set src_pkg $_r
+		
+		set need_update		0
+		
+		foreach { _pkgname _ver } $_source(packages) {
+		
+			if {$_ver != $src_pkg(Version) } { 
+				#
+				# for screen display
+				#
+				puts [format "%-40s %-25s --> src %-25s" $_pkgname $_ver $src_pkg(Version) ]
+				
+				#
+				# for later analysis
+				#
+				@file "$_pkgname $_ver --> src $_name $src_pkg(Version)"  > $list_file
+				
+				set need_update		1
+			}
+		}
+		
+		if $need_update { counter +need_update }
+		
+		incr count; 
+		# if { $count > 100 } break
+		
+		# show_progress "checking %6d " $count
+	}
+	
+	counter show
+	
+	#
+	# ::counter(need_update)             = 1187
+	# ::counter(source_packages_missing) = 2556
+	#
+}
 
 if { $ACTION == "update-packages" } {
 
@@ -329,7 +417,14 @@ if { $ACTION == "baixibao-update-job-A" } {
 	#
 	set repo_obj		[DebianLocalRepository new $repo_dir --arch ppc64 ]
 
-	# $repo_obj load  "$repo_dir/dists/jessie/main/binary-ppc64/Packages.gz" -verbose
+	$repo_obj load  "$repo_dir/dists/jessie/main/binary-ppc64/Packages.gz" -verbose
+	
+	puts "\n"
+	
+	#
+	# MUST call this, in order to generate the list of "Sources"
+	#
+	$repo_obj scan_sources -verbose
 	
 	#
 	# load those buildd packages one by one ...
@@ -344,23 +439,40 @@ if { $ACTION == "baixibao-update-job-A" } {
 	
 		set _name		$_pkg(Source)
 		
-		if [info exists exclude($_name)] { puts "$_name XXX" ; continue }
+		if [info exists exclude($_name)] { 
+			
+			counter +packages_discard
+			continue 
+		}
 		
+				#
+				# skip it if already installed ...
+				#
+				set _r		[$repo_obj source $_name]
+		
+				if ![is_empty_list $_r] {
+				
+					array set _old $_r
+					if { $_old(Version) == $_pkg(Version) } { counter +packages_skip ; continue }
+				}
+
 		#
 		# install this package ...
 		#
 		incr count;  show_progress "installing %4d" $count
 
-		if { $count > 10 } break
+		if { $count > 100 } break
 
 		set _fname		[$buildd_repo_obj package $_name -changes]
 			
 		$repo_obj install [file join $incoming_dir $_fname]
+		
+		counter +packages_install
 	}
 	
 	puts "total $count (source) packages installed."
 	
-	
+	counter show
 }
 
 

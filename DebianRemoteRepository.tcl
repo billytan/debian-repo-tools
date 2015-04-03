@@ -45,6 +45,53 @@ oo::class create DebianRemoteRepository {
 	}
 	
 	#
+	# for each source package, we have to make sure that all the related binary packages 
+	# are available in this repository
+	#
+	method scan_sources { args } {
+		variable	packages
+		variable	sources
+		
+		set count		0
+		
+		my foreach_package _pkg {
+		
+			set _name		$_pkg(Package)
+			
+			if [info exists _pkg(Source)] { set _name $_pkg(Source) }
+		
+			if ![info exists sources($_name)] {
+				lappend sources(*) $_name
+				
+				set sources($_name)		[list $_pkg(Package) $_pkg(Version) ]
+				
+				incr count
+				if [getopt $args "-verbose"] { show_progress "Sources %5d" $count }
+				
+			} else {
+				lappend sources($_name) $_pkg(Package) $_pkg(Version)
+			}
+		}
+		
+		if [getopt $args "-verbose"] { puts "$count source packages found." }
+	}
+	
+	method foreach_package_src { arr_name script args } {
+		variable	sources
+		
+		upvar $arr_name _r
+		
+		foreach _name $sources(*) {
+	
+			set _r(name)			$_name
+			set _r(packages)		$sources($_name)
+			
+			uplevel 1 $script
+		}
+	
+	}
+	
+	#
 	# get a specified package
 	#
 	method download { _pkgname args } {
