@@ -34,6 +34,8 @@ oo::class create DebianLocalRepository {
 	#
 	method load { pathname args } {
 
+		if [getopt $args "-verbose"] { puts "loading $pathname ..." } 
+
 		set _chan		[my open_zipped_file $pathname]
 
 		fconfigure $_chan -translation binary -encoding binary
@@ -68,7 +70,32 @@ oo::class create DebianLocalRepository {
 		return $count
 	}
 	
+	method load_packages { args } {
+		variable	suite
+		variable	ARCH
+		
+		set count		0
+		
+		foreach _s { main contrib non-free } {
+			set pathname		[file join $repo_dir "dists/$suite/$_s/binary-$ARCH/Packages.gz" ]
 
+			if [file exists $pathname] { 
+				incr count [eval [list my load $pathname] $args]
+			}
+		}
+		
+		#
+		# d-i packages
+		#
+		set pathname		[file join $repo_dir "dists/$suite/main/debian-installer/binary-$ARCH/Packages.gz" ]
+		
+		if [file exists $pathname] { 
+			incr count [eval [list my load $pathname] $args ]
+		}
+		
+		if [getopt $args "-verbose"] { puts "$count packages loaded." } 
+	}
+	
 	#
 	# In some cases, we need to remove all the related packages belong to a paticular source package
 	#
@@ -145,16 +172,25 @@ oo::class create DebianLocalRepository {
 			
 			# puts $_out
 			
-			if { [string first "errors" $_out] > 0 } {
-				return -code error $_out
-			}
+			if { [string first "errors" $_out] > 0 } { return -code error $_out }
 			
 			return
 		}
 		
+		#
+		# just call "reprepro includedeb", without any further checks ...
+		#
 		if { $_ext == ".deb" } {
 		
-		
+			catch {
+				exec /usr/bin/reprepro -V --ignore=wrongdistribution -b $repo_dir includedeb $suite $pathname
+			} _out
+			
+			puts $_out
+			
+			if { [string first "errors" $_out] > 0 } { return -code error $_out	}
+			
+			return
 		}
 	}
 
@@ -166,11 +202,11 @@ oo::class create DebianLocalRepository {
 		variable	ARCH
 		variable	sources
 		
-		puts "CALL remove $src_pkg $args"
+		# puts "CALL remove $src_pkg $args"
 		
 		if ![info exists sources($src_pkg)] {
 		
-			puts "    $src_pkg NOT FOUND"
+			# puts "    $src_pkg NOT FOUND"
 			
 			return [list]
 			
@@ -200,6 +236,13 @@ oo::class create DebianLocalRepository {
 		return $result
 	}
 
+
+	method remove_package { _name args } {
+
+
+
+	}
+	
 	destructor {}
 
 }

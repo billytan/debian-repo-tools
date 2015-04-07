@@ -8,7 +8,9 @@ oo::class create DebianRemoteRepository {
 	variable	cache_obj
 	
 	constructor { _url _suite args } {
-	
+		variable		suite
+		variable		ARCH
+		
 		set cache_obj		[eval [list DebianRepositoryCache new $_url $_suite] $args]
 	
 		#
@@ -16,6 +18,10 @@ oo::class create DebianRemoteRepository {
 		#
 		next
 
+		set suite		$_suite
+		
+		set _s		[getopt $args "--arch=%s"]
+		if { $_s != "" } { set ARCH $_s }
 	}
 	
 	method load_packages { args } {
@@ -38,7 +44,12 @@ oo::class create DebianRemoteRepository {
 			#
 			# NOT SURE IF "break" will work ... IT WORKS WELL !!!
 			#
-			# if { $count > 1000 } break
+			#
+			# FOR DEBUG PURPOSE
+			#
+			set _limit		[getopt $args "--limit=%s" ]
+			
+			if { $_limit != "" } { if { $count > $_limit } break }
 		}
 		
 		if [getopt $args "-verbose"]  { puts "$count packages loaded." }
@@ -103,11 +114,19 @@ oo::class create DebianRemoteRepository {
 		#   check if any error message ...
 		#
 		array set _pkg [my package $_pkgname ]
-		
+
 		# parray _pkg
 		# Filename: pool/main/a/alien/alien_8.93_all.deb
 		#
-		set _fname			[file tail $_pkg(Filename)]
+		# set _fname			[file tail $_pkg(Filename)]
+
+		set _fname		[join [list $_pkg(Package) $_pkg(Version) $_pkg(Architecture) ] "_" ]
+		append _fname ".deb"
+
+		#
+		# 9base_1%3a6-6_amd64.deb
+		#
+		regsub -all {\:} $_fname "%3a" _fname
 		
 		set pathname		[file join [pwd] $_fname ]
 		
