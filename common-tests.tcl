@@ -4,6 +4,12 @@
 
 source "common.tcl"
 
+file copy -force "sbuild.conf" /tmp
+
+# @ subst /tmp/sbuild.conf  [list %ARCH% amd64 %SUITE% jessie %CHROOT% "/tmp/chroot" ]
+@ subst /tmp/sbuild.conf  [list %ARCH% amd64 %SUITE% jessie %CHROOT% "/tmp/chroot" ] > /tmp/sbuild-NEW.conf
+
+exit 
 
 set sources(*)		{a b c d}
 

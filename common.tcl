@@ -159,6 +159,32 @@ proc @ { args } {
 	}
 	
 	#
+	# @ subst $pathname $subst_list
+	#
+	# @ subst $pathname $subst_list > $output_file
+	#
+	if { $_arg1 == "subst" } {
+	
+		set pathname		[lindex $args 1]
+		set subst_list		[lindex $args 2]
+		
+		@ read $pathname {
+	
+			foreach { _name _value } $subst_list { regsub -all $_name $_ $_value _ }
+			
+			lappend _lines $_
+		}
+		
+		foreach { _x _out } [lrange $args 3 end] break
+		
+		if [info exists _x] { set out_file  $_out } else { set out_file $pathname }
+		
+		@file [join $_lines "\n"] >> $out_file
+		
+		return
+	}
+	
+	#
 	# @ exec $prog $args > $output 2> $error_output  
 	#
 	# @ exec $prog $args 2>@1
