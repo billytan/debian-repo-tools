@@ -188,7 +188,10 @@ oo::class create DebianLocalRepository {
 			
 			puts $_out
 			
-			if { [string first "errors" $_out] > 0 } { return -code error $_out	}
+			#
+			# FIXME  libghc-errors-doc_1.4.7-1_all.deb
+			#
+			if { [string first "errors " $_out] > 0 } { return -code error $_out	}
 			
 			return
 		}

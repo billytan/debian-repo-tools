@@ -216,7 +216,83 @@ proc @ { args } {
 		
 		return
 	}
+	
+	#
+	# @ time +build_package_$pkg
+	#
+	# @ time -build_package_$pkg
+	#
+	# @ time
+	#
+	# @ time "build_package_$pkg"
+	#
+	if { $_arg1 == "time" } {
+		
+		if { [llength $args] == 1 } {
+		
+			foreach _name [array names ::__TIME__ ] { 
+				set _s		[eval __print_time $::__TIME__($_name) ]
+				
+				puts [format "%-40s %-40s" $_name $_s]
+			}
+			
+			return
+		}
+		
+		set _arg2		[lindex $args 1]
+		
+		if [regexp {^\+(\S+)$} $_arg2 _x _name] {
+		
+			set ::__TIME__($_name)		[list [clock seconds] ]
+			return
+		}
+		
+		if [regexp {^\-(\S+)$} $_arg2 _x _name] {
+		
+			if ![info exists ::__TIME__($_name) ] return
+			
+			lappend ::__TIME__($_name)		[clock seconds]
+			return
+		}
+
+		#
+		# just return the time string
+		#
+		if ![info exists ::__TIME__($_name)] return
+		
+		return [eval __print_time $::__TIME__($_name) ]
+	}
 }
+
+proc __print_time { _start _end } {
+
+	set _seconds		[expr $_end - $_start ]
+
+	set result			""
+	
+	#
+	# hours
+	#
+	set _hours			[expr $_seconds / 3600 ]
+	
+	if { $_hours != 0 } { append result "$_hours hours " }
+	
+	set _seconds		[expr $_seconds % 3600 ]
+	
+	#
+	# minutes
+	#
+	set _minutes		[expr $_seconds / 60 ]
+	
+	if { $_minutes != 0 } { append result "$_hours minutes " }
+	
+	set _seconds		[expr $_seconds % 60 ]
+	
+	append result "$_seconds seconds"
+	
+	return $result
+}
+
 
 rename unknown @unknown
 
